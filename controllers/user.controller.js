@@ -1,14 +1,16 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model"); // Asegúrate de la ruta correcta
+const User = require("../models/user.model"); 
 
 // Función para registrar un usuario
 async function registerUser(req, res) {
-    const { nombre, email, password, rol } = req.body;
+    const { nombre, nombre_usuario, email, password } = req.body;
 
     try {
-        // Comprobar si el usuario ya existe
-        const existingUser = await User.findOne({ email });
+        // Comprobar si el usuario ya existe por email o nombre_usuario
+        const existingUser = await User.findOne({ 
+            $or: [{ email }, { nombre_usuario }] 
+        });
         if (existingUser) {
             return res.status(400).send("El usuario ya existe");
         }
@@ -17,7 +19,7 @@ async function registerUser(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Crear un nuevo usuario
-        const user = new User({ nombre, email, password: hashedPassword, rol });
+        const user = new User({ nombre, nombre_usuario, email, password: hashedPassword });
 
         await user.save();
         res.status(201).send("Usuario creado exitosamente");
@@ -29,10 +31,10 @@ async function registerUser(req, res) {
 
 // Función para autenticar un usuario (login)
 async function loginUser(req, res) {
-    const { email, password } = req.body;
+    const { nombre_usuario, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ nombre_usuario });
         if (!user) {
             return res.status(401).json({ message: "Credenciales incorrectas" });
         }
@@ -44,7 +46,7 @@ async function loginUser(req, res) {
 
         // Crear token JWT
         const token = jwt.sign(
-            { userId: user._id, rol: user.rol, nombre: user.nombre }, // <-- agrega el nombre aquí
+            { userId: user._id, nombre_usuario: user.nombre_usuario }, 
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -74,45 +76,8 @@ function logoutUser(req, res) {
         .json({ message: 'Sesión cerrada exitosamente' });
 }
 
-async function getEstudiantesInscritos(req, res) {
-    const { materiaId } = req.params;
-
-    try {
-        // Convertir a ObjectId
-        const mongoose = require('mongoose');
-        const objectId = new mongoose.Types.ObjectId(materiaId);
-
-        const users = await User.find({ 
-            'materias.materia': objectId 
-        }).populate('materias.materia', 'nombre codigo');
-
-        const estudiantes = users.map(user => {
-            const materiaInfo = user.materias.find(m => 
-                m.materia && m.materia._id.toString() === materiaId
-            );
-            
-            // Solo incluir estudiantes con estado "En Curso"
-            if (materiaInfo && materiaInfo.estado === 'En Curso') {
-                return {
-                    _id: user._id,
-                    nombre: user.nombre,
-                    email: user.email,
-                    estado: materiaInfo.estado
-                };
-            }
-            return null; // Filtrar después
-        }).filter(estudiante => estudiante !== null); // Filtrar nulls
-
-        res.json(estudiantes);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al obtener estudiantes inscritos' });
-    }
-}
-
 module.exports = {
     registerUser,
     loginUser,
-    logoutUser,
-    getEstudiantesInscritos
+    logoutUser
 };

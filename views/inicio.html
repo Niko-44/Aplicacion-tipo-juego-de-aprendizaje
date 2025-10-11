@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Página de Inicio</title>
+</head>
+<body>
+    <h2>Bienvenido, <span id="nombreUsuario">Usuario</span></h2>
+    <button id="logoutBtn">Cerrar sesión</button>
+
+    <script>
+
+        // Cerrar sesión
+        document.getElementById('logoutBtn').onclick = async function() {
+            await fetch('/users/logout', { method: 'POST', credentials: 'include' });
+            window.location.href = '/login';
+        };
+    </script>
+</body>
+</html>
