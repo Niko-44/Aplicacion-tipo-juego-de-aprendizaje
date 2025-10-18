@@ -1,16 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const authMiddleware = require("./middlewares/auth");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const path = require("path");
-
+const cookieParser = require("cookie-parser"); // agregado
 
 require("dotenv").config(); // Cargar variables de entorno desde el archivo .env
 const app = express();
 
 // Importar rutas
 const userRoutes = require("./routes/users.routes");
+const misionRoutes = require("./routes/mision.routes"); // agregado
 
 // Obtener las variables de entorno
 const mongoURI = process.env.MONGO_URI;
@@ -21,54 +20,27 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Conexión a MongoDB exitosa"))
     .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
-// Middleware para procesar datos del cuerpo de la solicitud
+// Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(cookieParser()); // usado para leer/escribir cookies
 
-// Redirección desde la ruta principal
-app.get('/', (req, res) => {
-    // Si el usuario tiene un token válido, redirige a /inicio, si no, a /login
-    const token = req.cookies.token;
-    if (token) {
-        try {
-            jwt.verify(token, process.env.JWT_SECRET);
-            return res.redirect('/inicio');
-        } catch (err) {
-            // Token inválido
-            return res.redirect('/login');
-        }
-    } else {
-        return res.redirect('/login');
-    }
+// Servir archivos estáticos desde la carpeta views (inicio.html estará accesible)
+app.use(express.static(path.join(__dirname, "views")));
+
+// Rutas: delegar raíz a userRoutes que maneja creación/validación de usuario
+app.use("/", userRoutes);
+
+// Exponer API de misiones en /misiones
+app.use("/misiones", misionRoutes);
+
+// Ruta explícita para abrir la página de inicio
+app.get("/inicio", (req, res) => {
+    res.sendFile(path.join(__dirname, "views", "inicio.html"));
 });
-
-
-app.use("/users", userRoutes);
-
-
-// Rutas publicas
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'inicio.html'));
-});
-
-app.get('/inicio', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'inicio.html'));
-});
-
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login.html'));
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'register.html'));
-});
-
-
-// Rutas para usuarios
 
 // Iniciar el servidor
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+

@@ -6,15 +6,44 @@
 </head>
 <body>
     <h2>Bienvenido, <span id="nombreUsuario">Usuario</span></h2>
-    <button id="logoutBtn">Cerrar sesión</button>
+
+    <h3>Misiones</h3>
+    <ul id="misionesList">
+        <li>Cargando misiones...</li>
+    </ul>
 
     <script>
+    // Pequeñas utilidades
+    function escapeHtml(str){
+      if(!str) return "";
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function getCookie(name){
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? decodeURIComponent(v.pop()) : null;
+    }
 
-        // Cerrar sesión
-        document.getElementById('logoutBtn').onclick = async function() {
-            await fetch('/users/logout', { method: 'POST', credentials: 'include' });
-            window.location.href = '/login';
-        };
+    (async function loadMisiones(){
+      try {
+        const res = await fetch('/misiones');
+        if(!res.ok) throw new Error('Respuesta no ok');
+        const misiones = await res.json();
+        const list = document.getElementById('misionesList');
+
+        if(!misiones || misiones.length === 0){
+          list.innerHTML = '<li>No hay misiones disponibles.</li>';
+          return;
+        }
+
+        list.innerHTML = misiones.map(m => {
+          const pasos = Array.isArray(m.pasos) ? escapeHtml(m.pasos.join(', ')) : '';
+          return `<li><strong>${escapeHtml(m.titulo)}</strong> (Nivel: ${escapeHtml(m.nivel)})<br>${escapeHtml(m.descripcion)}<br><small>Pasos: ${pasos}</small></li>`;
+        }).join('');
+      } catch(err){
+        console.error(err);
+        document.getElementById('misionesList').innerHTML = '<li>Error al cargar misiones.</li>';
+      }
+    })();
     </script>
 </body>
 </html>

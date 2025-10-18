@@ -1,83 +1,52 @@
+const fs = require("fs");
+const path = require("path");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/user.model"); 
+const User = require("../models/user.model");
 
-// Función para registrar un usuario
-async function registerUser(req, res) {
-    const { nombre, nombre_usuario, email, password } = req.body;
+const ensureUser = async (req, res, next) => {
+  try {
+    let userId = req.cookies && req.cookies.userId;
+    let user = null;
 
-    try {
-        // Comprobar si el usuario ya existe por email o nombre_usuario
-        const existingUser = await User.findOne({ 
-            $or: [{ email }, { nombre_usuario }] 
-        });
-        if (existingUser) {
-            return res.status(400).send("El usuario ya existe");
-        }
-
-        // Cifrar la contraseña
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Crear un nuevo usuario
-        const user = new User({ nombre, nombre_usuario, email, password: hashedPassword });
-
-        await user.save();
-        res.status(201).send("Usuario creado exitosamente");
-    } catch (error) {
-        console.error("Error al crear el usuario:", error);
-        res.status(500).send("Error al crear el usuario");
+    if (userId) {
+      user = await User.findById(userId).exec();
     }
-}
 
-// Función para autenticar un usuario (login)
-async function loginUser(req, res) {
-    const { nombre_usuario, password } = req.body;
+    if (!user) {
+      // Crear usuario automático "invitado"
+      const random = Math.random().toString(36).substring(2, 9);
+      const nombre = "Invitado";
+      const nombre_usuario = `user_${random}`;
+      const rawPassword = random; // contraseña temporal
+      const password = await bcrypt.hash(rawPassword, 10);
+      const email = `${nombre_usuario}@example.com`;
 
-    try {
-        const user = await User.findOne({ nombre_usuario });
-        if (!user) {
-            return res.status(401).json({ message: "Credenciales incorrectas" });
-        }
+      user = new User({ nombre, nombre_usuario, password, email });
+      await user.save();
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Credenciales incorrectas" });
-        }
-
-        // Crear token JWT
-        const token = jwt.sign(
-            { userId: user._id, nombre_usuario: user.nombre_usuario }, 
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
-
-        // Enviar token en cookie además de JSON
-        res
-            .cookie('token', token, {
-                httpOnly: true,
-                maxAge: 3600000,
-                sameSite: 'lax'
-            })
-            .json({
-                message: "¡Inicio de sesión exitoso!",
-                token: token  
-            });
-
-    } catch (error) {
-        console.error("Error al intentar iniciar sesión:", error);
-        res.status(500).json({ message: "Error al intentar iniciar sesión" });
+      // Guardar id de usuario en cookie
+      res.cookie("userId", user._id.toString(), {
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
     }
-}
 
-// Función para cerrar sesión
-function logoutUser(req, res) {
-    res
-        .clearCookie('token', { httpOnly: true, sameSite: 'lax' })
-        .json({ message: 'Sesión cerrada exitosamente' });
-}
+    req.user = user;
 
-module.exports = {
-    registerUser,
-    loginUser,
-    logoutUser
+    // Si se solicita HTML, inyectar nombre de usuario en inicio.html y devolver
+    const file = path.join(__dirname, "..", "views", "inicio.html");
+    if (fs.existsSync(file)) {
+      let html = fs.readFileSync(file, "utf8");
+      // reemplaza el texto dentro del span con id nombreUsuario (simple replace)
+      html = html.replace(/<span id="nombreUsuario">.*?<\/span>/, `<span id="nombreUsuario">${user.nombre_usuario}</span>`);
+      return res.send(html);
+    }
+
+    next();
+  } catch (err) {
+    console.error("ensureUser error:", err);
+    res.status(500).send("Error interno del servidor");
+  }
 };
+
+module.exports = { ensureUser };
