@@ -1,49 +1,562 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>Página de Inicio</title>
-</head>
-<body>
-    <h2>Bienvenido, <span id="nombreUsuario">Usuario</span></h2>
-
-    <h3>Misiones</h3>
-    <ul id="misionesList">
-        <li>Cargando misiones...</li>
-    </ul>
-
-    <script>
-    // Pequeñas utilidades
-    function escapeHtml(str){
-      if(!str) return "";
-      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
-    function getCookie(name){
-      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-      return v ? decodeURIComponent(v.pop()) : null;
-    }
-
-    (async function loadMisiones(){
-      try {
-        const res = await fetch('/misiones');
-        if(!res.ok) throw new Error('Respuesta no ok');
-        const misiones = await res.json();
-        const list = document.getElementById('misionesList');
-
-        if(!misiones || misiones.length === 0){
-          list.innerHTML = '<li>No hay misiones disponibles.</li>';
-          return;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel de Actividades</title>
+    <style>
+        /* Variables CSS para consistencia */
+        :root {
+            --primary-color: #2c6eb5;
+            --secondary-color: #4a9d5c;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --light-gray: #e9ecef;
+            --medium-gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --font-size-large: 1.5rem;
+            --font-size-medium: 1.125rem;
+            --font-size-normal: 1rem;
+            --font-size-small: 0.875rem;
+            --line-height: 1.5;
         }
 
-        list.innerHTML = misiones.map(m => {
-          const pasos = Array.isArray(m.pasos) ? escapeHtml(m.pasos.join(', ')) : '';
-          return `<li><strong>${escapeHtml(m.titulo)}</strong> (Nivel: ${escapeHtml(m.nivel)})<br>${escapeHtml(m.descripcion)}<br><small>Pasos: ${pasos}</small></li>`;
-        }).join('');
-      } catch(err){
-        console.error(err);
-        document.getElementById('misionesList').innerHTML = '<li>Error al cargar misiones.</li>';
-      }
-    })();
+        /* Reset y estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: var(--line-height);
+            font-size: var(--font-size-normal);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Cabecera */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .header h1 {
+            font-size: var(--font-size-large);
+            margin-bottom: 5px;
+        }
+
+        .welcome-message {
+            font-size: var(--font-size-medium);
+            opacity: 0.9;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Sección de misiones */
+        .misiones-section {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: var(--font-size-medium);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        /* Lista de misiones */
+        .misiones-list {
+            list-style: none;
+        }
+
+        .mision-item {
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--secondary-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mision-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mision-titulo {
+            font-size: var(--font-size-medium);
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .mision-descripcion {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .mision-detalles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mision-nivel {
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: var(--font-size-small);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        /* Estados de carga y error */
+        .loading,
+        .error,
+        .empty {
+            text-align: center;
+            padding: 30px;
+            font-size: var(--font-size-medium);
+            color: var(--medium-gray);
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        /* Botones y controles */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-normal);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: #1d5a9b;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-refresh {
+            margin-top: 15px;
+            align-self: flex-start;
+        }
+
+        .btn-iniciar {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-iniciar:hover {
+            background-color: #3d8c4d;
+        }
+
+        .btn-volver {
+            background-color: var(--medium-gray);
+        }
+
+        .btn-volver:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-terminar {
+            background-color: #dc3545;
+        }
+
+        .btn-terminar:hover {
+            background-color: #c82333;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Página de detalles de misión */
+        .mision-detalles-page {
+            display: none;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .mision-detalles-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .mision-detalles-titulo {
+            color: var(--primary-color);
+            font-size: var(--font-size-large);
+            margin-bottom: 10px;
+        }
+
+        .mision-detalles-nivel {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: var(--font-size-small);
+        }
+
+        .mision-detalles-descripcion {
+            margin-bottom: 25px;
+            font-size: var(--font-size-medium);
+            line-height: 1.6;
+        }
+
+        .pasos-section {
+            margin-top: 25px;
+        }
+
+        .pasos-lista {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .pasos-lista li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--medium-gray);
+            font-size: var(--font-size-small);
+            padding: 20px;
+        }
+
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-large: 1.25rem;
+                --font-size-medium: 1rem;
+                --font-size-normal: 0.9375rem;
+                --font-size-small: 0.8125rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .misiones-section {
+                padding: 20px 15px;
+            }
+
+            .mision-item {
+                padding: 15px;
+            }
+
+            .mision-detalles {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .mision-detalles-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 15px 10px;
+            }
+
+            .misiones-section {
+                padding: 15px 10px;
+            }
+        }
+
+        /* Mejoras de accesibilidad */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Enfoque para navegación con teclado */
+        button:focus,
+        a:focus {
+            outline: 3px solid #005fcc;
+            outline-offset: 2px;
+        }
+
+        /* Mejora de contraste para texto */
+        .high-contrast {
+            color: #000000;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Mi Panel de Actividades</h1>
+            <p class="welcome-message">Bienvenido, <span id="nombreUsuario">Usuario</span></p>
+        </header>
+
+        <main class="main-content">
+            <!-- Sección principal de misiones -->
+            <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
+                <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
+                <ul id="misionesList" class="misiones-list">
+                    <li class="loading">Cargando actividades...</li>
+                </ul>
+                <button id="refreshBtn" class="btn btn-refresh" aria-label="Actualizar lista de actividades">
+                    <span class="btn-icon">↻</span> Actualizar
+                </button>
+            </section>
+
+            <!-- Página de detalles de misión -->
+            <section id="misionDetallesSection" class="mision-detalles-page" aria-labelledby="mision-detalles-title"
+                style="display:none">
+                <div class="mision-detalles-header">
+                    <div>
+                        <h2 id="mision-detalles-title" class="mision-detalles-titulo">Título de la Misión</h2>
+                        <div class="mision-detalles-descripcion">Descripción de la misión</div>
+                    </div>
+                    <div class="mision-detalles-nivel">Nivel: Principiante</div>
+                </div>
+
+                <div class="pasos-section">
+                    <h3 class="section-title">Pasos a seguir</h3>
+                    <ol id="pasosList" class="pasos-lista">
+                        <!-- Los pasos se cargarán dinámicamente aquí -->
+                    </ol>
+                </div>
+
+                <div class="btn-container">
+                    <button id="volverBtn" class="btn btn-volver">
+                        <span class="btn-icon">←</span> Volver
+                    </button>
+                    <button id="terminarBtn" class="btn btn-terminar">
+                        <span class="btn-icon">✓</span> Terminar Misión
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© 2023 Mi Panel de Actividades - Diseñado para ser accesible y fácil de usar</p>
+        </footer>
+    </div>
+
+    <script>
+        // Utilidades
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function getCookie(name) {
+            const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return v ? decodeURIComponent(v.pop()) : null;
+        }
+
+        // Variables globales
+        let misionesActuales = [];
+        let misionActualId = null;
+
+        // Cargar misiones
+        async function loadMisiones() {
+            const list = document.getElementById('misionesList');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            try {
+                list.innerHTML = '<li class="loading">Cargando actividades...</li>';
+                refreshBtn.disabled = true;
+
+                const res = await fetch('/misiones');
+                if (!res.ok) throw new Error('Respuesta no ok');
+
+                misionesActuales = await res.json();
+
+                if (!misionesActuales || misionesActuales.length === 0) {
+                    list.innerHTML = '<li class="empty">No hay actividades disponibles en este momento.</li>';
+                    return;
+                }
+
+                list.innerHTML = misionesActuales.map(m => {
+                    return `<li class="mision-item">
+                                <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
+                                <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
+                                <div class="mision-detalles">
+                                    <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
+                                    <button class="btn btn-iniciar" data-mision-id="${m._id}">
+                                        <span class="btn-icon">▶</span> Iniciar Misión
+                                    </button>
+                                </div>
+                            </li>`;
+                }).join('');
+
+                document.querySelectorAll('.btn-iniciar').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const misionId = this.getAttribute('data-mision-id');
+                        mostrarDetallesMision(misionId);
+                    });
+                });
+
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = '<li class="error">Error al cargar las actividades. Por favor, intente nuevamente.</li>';
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Mostrar detalles de misión
+        async function mostrarDetallesMision(misionId) {
+            try {
+                misionActualId = misionId;
+                document.getElementById('misionesSection').style.display = 'none';
+                document.getElementById('misionDetallesSection').style.display = 'block';
+
+                const res = await fetch(`/misiones/${misionId}`);
+                if (!res.ok) throw new Error('Error al cargar los detalles de la misión');
+
+                const mision = await res.json();
+
+                document.getElementById('mision-detalles-title').textContent = mision.titulo;
+                document.querySelector('.mision-detalles-descripcion').textContent = mision.descripcion;
+                document.querySelector('.mision-detalles-nivel').textContent = `Nivel: ${mision.nivel}`;
+
+                const pasosList = document.getElementById('pasosList');
+                if (mision.pasos && mision.pasos.length > 0) {
+                    pasosList.innerHTML = mision.pasos.map(paso => `<li>${escapeHtml(paso)}</li>`).join('');
+                } else {
+                    pasosList.innerHTML = '<li>No hay pasos específicos para esta misión.</li>';
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert('Error al cargar los detalles de la misión. Por favor, intente nuevamente.');
+                volverAListaMisiones();
+            }
+        }
+
+        // Volver a lista
+        function volverAListaMisiones() {
+            document.getElementById('misionDetallesSection').style.display = 'none';
+            document.getElementById('misionesSection').style.display = 'block';
+            misionActualId = null;
+        }
+
+        // Terminar misión
+        async function terminarMision() {
+            if (!misionActualId) return alert("No se ha seleccionado ninguna misión");
+
+            try {
+                const response = await fetch("/misiones/terminar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ misionId: misionActualId, puntos: 10 })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`¡Misión completada! Ahora tienes ${data.puntos} puntos.`);
+                    volverAListaMisiones();
+                } else {
+                    alert("No se pudo completar la misión: " + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error al comunicarse con el servidor");
+            }
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            loadMisiones();
+
+            document.getElementById('refreshBtn').addEventListener('click', loadMisiones);
+            document.getElementById('volverBtn').addEventListener('click', volverAListaMisiones);
+            document.getElementById('terminarBtn').addEventListener('click', terminarMision);
+
+            const nombreUsuario = getCookie('nombreUsuario');
+            if (nombreUsuario) {
+                document.getElementById('nombreUsuario').textContent = nombreUsuario;
+            }
+        });
     </script>
 </body>
+
 </html>
