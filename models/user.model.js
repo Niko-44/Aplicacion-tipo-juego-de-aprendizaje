@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
-  nombre_usuario: { type: String, required: true, unique: true },
+  nombre_usuario: { type: String, required: true },
   password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
+  uuid: { type: String, required: true, unique: true },
   progreso: {
     misiones_completadas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Mision" }],
     puntos: { type: Number, default: 0 },

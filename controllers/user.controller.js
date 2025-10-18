@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require('uuid');
 const User = require("../models/user.model");
 
 const ensureUser = async (req, res, next) => {
@@ -20,8 +21,16 @@ const ensureUser = async (req, res, next) => {
       const rawPassword = random; // contraseña temporal
       const password = await bcrypt.hash(rawPassword, 10);
       const email = `${nombre_usuario}@example.com`;
+      const uuid = uuidv4(); // Generar UUID único
 
-      user = new User({ nombre, nombre_usuario, password, email });
+      user = new User({ 
+        nombre, 
+        nombre_usuario, 
+        password, 
+        email,
+        uuid  // Agregar UUID
+      });
+      
       await user.save();
 
       // Guardar id de usuario en cookie
@@ -37,7 +46,6 @@ const ensureUser = async (req, res, next) => {
     const file = path.join(__dirname, "..", "views", "inicio.html");
     if (fs.existsSync(file)) {
       let html = fs.readFileSync(file, "utf8");
-      // reemplaza el texto dentro del span con id nombreUsuario (simple replace)
       html = html.replace(/<span id="nombreUsuario">.*?<\/span>/, `<span id="nombreUsuario">${user.nombre_usuario}</span>`);
       return res.send(html);
     }
