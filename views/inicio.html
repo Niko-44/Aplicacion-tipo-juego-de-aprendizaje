@@ -69,6 +69,43 @@
             opacity: 0.9;
         }
 
+        /* NUEVO: Sistema de pestañas */
+        .tabs-container {
+            margin-bottom: 25px;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 20px;
+            background-color: var(--light-gray);
+            border: none;
+            font-size: var(--font-size-medium);
+            font-weight: 600;
+            color: var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tab.active {
+            background-color: var(--card-color);
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
         /* Contenido principal */
         .main-content {
             display: flex;
@@ -276,6 +313,21 @@
             border-radius: var(--border-radius);
         }
 
+        /* NUEVO: Estilo para las pestañas de contenido */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         /* Footer */
         .footer {
             margin-top: 40px;
@@ -330,6 +382,14 @@
                 flex-direction: column;
                 gap: 10px;
             }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                padding: 12px 15px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -381,82 +441,96 @@
             <p class="welcome-message">Bienvenido, <span id="nombreUsuario">Usuario</span></p>
         </header>
 
+        <!-- NUEVO: Sistema de pestañas -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button id="tabMisiones" class="tab active" data-tab="misiones">Mis Actividades</button>
+                <button id="tabLogros" class="tab" data-tab="logros">Mis Logros</button>
+            </div>
+        </div>
+
         <main class="main-content">
-            <!-- Sección principal de misiones -->
-            <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
-                <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
-                <ul id="misionesList" class="misiones-list">
-                    <li class="loading">Cargando actividades...</li>
-                </ul>
-                <button id="refreshBtn" class="btn btn-refresh" aria-label="Actualizar lista de actividades">
-                    <span class="btn-icon">↻</span> Actualizar
-                </button>
-            </section>
-
-            <!-- Página de detalles de misión -->
-            <section id="misionDetallesSection" class="mision-detalles-page" aria-labelledby="mision-detalles-title"
-                style="display:none">
-                <div class="mision-detalles-header">
-                    <div>
-                        <h2 id="mision-detalles-title" class="mision-detalles-titulo">Título de la Misión</h2>
-                        <div class="mision-detalles-descripcion">Descripción de la misión</div>
-                    </div>
-                    <div class="mision-detalles-nivel">Nivel: Principiante</div>
-                </div>
-
-                <div class="pasos-section">
-                    <h3 class="section-title">Pasos a seguir</h3>
-                    <ol id="pasosList" class="pasos-lista">
-                        <!-- Los pasos se cargarán dinámicamente aquí -->
-                    </ol>
-                </div>
-
-                <div class="btn-container">
-                    <button id="volverBtn" class="btn btn-volver">
-                        <span class="btn-icon">←</span> Volver
+            <!-- Pestaña de misiones -->
+            <div id="tabMisionesContent" class="tab-content active">
+                <!-- Sección principal de misiones -->
+                <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
+                    <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
+                    <ul id="misionesList" class="misiones-list">
+                        <li class="loading">Cargando actividades...</li>
+                    </ul>
+                    <button id="refreshBtn" class="btn btn-refresh" aria-label="Actualizar lista de actividades">
+                        <span class="btn-icon">↻</span> Actualizar
                     </button>
-                    <button id="terminarBtn" class="btn btn-terminar">
-                        <span class="btn-icon">✓</span> Terminar Misión
-                    </button>
-                </div>
-            </section>
+                </section>
 
-            <!-- NUEVA SECCIÓN: Logros -->
-            <section id="logrosSection" class="misiones-section" aria-labelledby="logros-title" style="margin-top:25px">
-                <h2 id="logros-title" class="section-title">Mis Logros</h2>
-
-                <div id="logrosContent">
-                    <div id="logroActualCard" class="mision-item" style="border-left-color: #f0ad4e;">
-                        <div class="mision-titulo">Logro actual: <span id="logroActualNombre">—</span></div>
-                        <div class="mision-descripcion" id="logroActualDesc">—</div>
-                        <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos: <span
-                                id="puntosUsuario">0</span></div>
-                    </div>
-
-                    <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #6f42c1;">
-                        <div class="mision-titulo">Siguiente meta: <span id="siguienteLogroNombre">—</span></div>
-                        <div class="mision-descripcion" id="siguienteLogroDesc">—</div>
-                        <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos:
-                            <span id="siguientePuntos">—</span>
+                <!-- Página de detalles de misión -->
+                <section id="misionDetallesSection" class="mision-detalles-page" aria-labelledby="mision-detalles-title"
+                    style="display:none">
+                    <div class="mision-detalles-header">
+                        <div>
+                            <h2 id="mision-detalles-title" class="mision-detalles-titulo">Título de la Misión</h2>
+                            <div class="mision-detalles-descripcion">Descripción de la misión</div>
                         </div>
-                        <div style="margin-top:8px;">
-                            <progress id="logroProgress" value="0" max="100"
-                                style="width:100%; height:14px;"></progress>
+                        <div class="mision-detalles-nivel">Nivel: Principiante</div>
+                    </div>
+
+                    <div class="pasos-section">
+                        <h3 class="section-title">Pasos a seguir</h3>
+                        <ol id="pasosList" class="pasos-lista">
+                            <!-- Los pasos se cargarán dinámicamente aquí -->
+                        </ol>
+                    </div>
+
+                    <div class="btn-container">
+                        <button id="volverBtn" class="btn btn-volver">
+                            <span class="btn-icon">←</span> Volver
+                        </button>
+                        <button id="terminarBtn" class="btn btn-terminar">
+                            <span class="btn-icon">✓</span> Terminar Misión
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Pestaña de logros -->
+            <div id="tabLogrosContent" class="tab-content">
+                <!-- Sección de logros -->
+                <section id="logrosSection" class="misiones-section" aria-labelledby="logros-title">
+                    <h2 id="logros-title" class="section-title">Mis Logros</h2>
+
+                    <div id="logrosContent">
+                        <div id="logroActualCard" class="mision-item" style="border-left-color: #f0ad4e;">
+                            <div class="mision-titulo">Logro actual: <span id="logroActualNombre">—</span></div>
+                            <div class="mision-descripcion" id="logroActualDesc">—</div>
+                            <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos: <span
+                                    id="puntosUsuario">0</span></div>
+                        </div>
+
+                        <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #6f42c1;">
+                            <div class="mision-titulo">Siguiente meta: <span id="siguienteLogroNombre">—</span></div>
+                            <div class="mision-descripcion" id="siguienteLogroDesc">—</div>
+                            <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos:
+                                <span id="siguientePuntos">—</span>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <progress id="logroProgress" value="0" max="100"
+                                    style="width:100%; height:14px;"></progress>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:15px;">
+                            <h3 class="section-title" style="margin-bottom:10px">Logros desbloqueados</h3>
+                            <ul id="logrosDesbloqueadosList" class="misiones-list">
+                                <li class="empty">Cargando logros...</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-top:12px;">
+                            <button id="refreshLogrosBtn" class="btn btn-refresh">↻ Actualizar logros</button>
                         </div>
                     </div>
-
-                    <div style="margin-top:15px;">
-                        <h3 class="section-title" style="margin-bottom:10px">Logros desbloqueados</h3>
-                        <ul id="logrosDesbloqueadosList" class="misiones-list">
-                            <li class="empty">Cargando logros...</li>
-                        </ul>
-                    </div>
-
-                    <div style="margin-top:12px;">
-                        <button id="refreshLogrosBtn" class="btn btn-refresh">↻ Actualizar logros</button>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
 
         <footer class="footer">
@@ -479,6 +553,28 @@
         // Variables globales
         let misionesActuales = [];
         let misionActualId = null;
+
+        // NUEVO: Función para cambiar entre pestañas
+        function cambiarPestaña(pestañaId) {
+            // Ocultar todas las pestañas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones de pestaña
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activar la pestaña seleccionada
+            document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}Content`).classList.add('active');
+            document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}`).classList.add('active');
+            
+            // Si estamos en la pestaña de logros, actualizamos los datos
+            if (pestañaId === 'logros') {
+                loadLogros();
+            }
+        }
 
         // Cargar misiones
         async function loadMisiones() {
@@ -667,6 +763,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             loadMisiones();
             loadLogros();
+
+            // NUEVO: Event listeners para las pestañas
+            document.getElementById('tabMisiones').addEventListener('click', () => cambiarPestaña('misiones'));
+            document.getElementById('tabLogros').addEventListener('click', () => cambiarPestaña('logros'));
 
             document.getElementById('refreshBtn').addEventListener('click', loadMisiones);
             document.getElementById('refreshLogrosBtn').addEventListener('click', loadLogros);
