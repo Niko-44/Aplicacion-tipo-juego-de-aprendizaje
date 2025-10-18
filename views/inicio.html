@@ -193,6 +193,15 @@
             background-color: #3d8c4d;
         }
 
+        /* NUEVO: Estilo para el botón "Volver a intentar" */
+        .btn-reintentar {
+            background-color: #f0ad4e; /* Color naranja */
+        }
+
+        .btn-reintentar:hover {
+            background-color: #ec971f; /* Naranja más oscuro al hacer hover */
+        }
+
         .btn-volver {
             background-color: var(--medium-gray);
         }
@@ -493,19 +502,21 @@
                 list.innerHTML = misionesActuales.map(m => {
                     const btnTexto = m.iniciada ? "Volver a intentar" : "Iniciar Misión";
                     const btnIcono = m.iniciada ? "↻" : "▶";
+                    const btnClase = m.iniciada ? "btn-reintentar" : "btn-iniciar";
+                    
                     return `<li class="mision-item">
                         <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
                         <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
                         <div class="mision-detalles">
                             <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
-                            <button class="btn btn-iniciar" data-mision-id="${m._id}">
+                            <button class="btn ${btnClase}" data-mision-id="${m._id}">
                                 <span class="btn-icon">${btnIcono}</span> ${btnTexto}
                             </button>
                         </div>
                     </li>`;
                 }).join('');
 
-                document.querySelectorAll('.btn-iniciar').forEach(btn => {
+                document.querySelectorAll('.btn-iniciar, .btn-reintentar').forEach(btn => {
                     btn.addEventListener('click', function () {
                         const misionId = this.getAttribute('data-mision-id');
                         mostrarDetallesMision(misionId);
