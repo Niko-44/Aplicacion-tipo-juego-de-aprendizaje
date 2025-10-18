@@ -8,11 +8,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   uuid: { type: String, required: true, unique: true },
   progreso: {
-    misiones_completadas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Mision" }],
+    misiones_completadas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Mision", default: [] }],
     puntos: { type: Number, default: 0 },
-    logros: [{ type: mongoose.Schema.Types.ObjectId, ref: "Logro" }]
+    logros: [{ type: mongoose.Schema.Types.ObjectId, ref: "Logro", default: [] }]
   }
 });
-
 
 module.exports = mongoose.model("User", userSchema);

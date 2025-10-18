@@ -411,6 +411,41 @@
                     </button>
                 </div>
             </section>
+
+            <!-- NUEVA SECCIÓN: Logros -->
+            <section id="logrosSection" class="misiones-section" aria-labelledby="logros-title" style="margin-top:25px">
+                <h2 id="logros-title" class="section-title">Mis Logros</h2>
+
+                <div id="logrosContent">
+                    <div id="logroActualCard" class="mision-item" style="border-left-color: #f0ad4e;">
+                        <div class="mision-titulo">Logro actual: <span id="logroActualNombre">—</span></div>
+                        <div class="mision-descripcion" id="logroActualDesc">—</div>
+                        <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos: <span
+                                id="puntosUsuario">0</span></div>
+                    </div>
+
+                    <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #6f42c1;">
+                        <div class="mision-titulo">Siguiente meta: <span id="siguienteLogroNombre">—</span></div>
+                        <div class="mision-descripcion" id="siguienteLogroDesc">—</div>
+                        <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos: <span
+                                id="siguientePuntos">—</span></div>
+                        <div style="margin-top:8px;">
+                            <progress id="logroProgress" value="0" max="100" style="width:100%; height:14px;"></progress>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:15px;">
+                        <h3 class="section-title" style="margin-bottom:10px">Logros desbloqueados</h3>
+                        <ul id="logrosDesbloqueadosList" class="misiones-list">
+                            <li class="empty">Cargando logros...</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <button id="refreshLogrosBtn" class="btn btn-refresh">↻ Actualizar logros</button>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <footer class="footer">
@@ -533,6 +568,8 @@
 
                 if (response.ok) {
                     alert(`¡Misión completada! Ahora tienes ${data.puntos} puntos.`);
+                    // actualizar UI de logros
+                    await loadLogros();
                     volverAListaMisiones();
                 } else {
                     alert("No se pudo completar la misión: " + data.message);
@@ -543,11 +580,76 @@
             }
         }
 
+        // NUEVAS FUNCIONES: Logros
+        async function loadLogros() {
+            try {
+                document.getElementById('logrosDesbloqueadosList').innerHTML = '<li class="loading">Cargando logros...</li>';
+
+                const [actualRes, desbloqRes] = await Promise.all([
+                    fetch('/logros/actual'),
+                    fetch('/logros/desbloqueados')
+                ]);
+
+                if (!actualRes.ok) throw new Error('Error al obtener logro actual');
+                if (!desbloqRes.ok) throw new Error('Error al obtener logros desbloqueados');
+
+                const actualData = await actualRes.json();
+                const desbloqData = await desbloqRes.json();
+
+                // puntos y logro actual
+                const puntos = actualData.puntos || 0;
+                document.getElementById('puntosUsuario').textContent = puntos;
+
+                if (actualData.logroActual) {
+                    document.getElementById('logroActualNombre').textContent = actualData.logroActual.nombre;
+                    document.getElementById('logroActualDesc').textContent = actualData.logroActual.descripcion;
+                } else {
+                    document.getElementById('logroActualNombre').textContent = '—';
+                    document.getElementById('logroActualDesc').textContent = 'Aún no has desbloqueado ningún logro.';
+                }
+
+                if (actualData.siguienteLogro) {
+                    const s = actualData.siguienteLogro;
+                    document.getElementById('siguienteLogroNombre').textContent = s.nombre;
+                    document.getElementById('siguienteLogroDesc').textContent = s.descripcion;
+                    document.getElementById('siguientePuntos').textContent = s.puntos_requeridos;
+
+                    // calcular progreso porcentual hacia siguiente logro
+                    const prev = (actualData.logroActual && actualData.logroActual.puntos_requeridos) ? actualData.logroActual.puntos_requeridos : 0;
+                    const progress = Math.min(100, Math.round(((puntos - prev) / (s.puntos_requeridos - prev || 1)) * 100));
+                    const progEl = document.getElementById('logroProgress');
+                    progEl.value = progress;
+                    progEl.max = 100;
+                } else {
+                    document.getElementById('siguienteLogroNombre').textContent = '—';
+                    document.getElementById('siguienteLogroDesc').textContent = 'No hay más logros definidos.';
+                    document.getElementById('siguientePuntos').textContent = '—';
+                    const progEl = document.getElementById('logroProgress');
+                    progEl.value = 100;
+                }
+
+                // lista de logros desbloqueados desde /logros/desbloqueados
+                const listEl = document.getElementById('logrosDesbloqueadosList');
+                const desbloqueados = desbloqData.logros || [];
+                if (!desbloqueados.length) {
+                    listEl.innerHTML = '<li class="empty">No has desbloqueado logros aún.</li>';
+                } else {
+                    listEl.innerHTML = desbloqueados.map(l => `<li class="mision-item"><div class="mision-titulo">${escapeHtml(l.nombre)}</div><div class="mision-descripcion">${escapeHtml(l.descripcion)}</div><div style="margin-top:8px;color:var(--medium-gray)">Requiere ${l.puntos_requeridos} pts</div></li>`).join('');
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('logrosDesbloqueadosList').innerHTML = '<li class="error">Error al cargar logros. Intenta nuevamente.</li>';
+            }
+        }
+
         // Inicializar
         document.addEventListener('DOMContentLoaded', function () {
             loadMisiones();
+            loadLogros();
 
             document.getElementById('refreshBtn').addEventListener('click', loadMisiones);
+            document.getElementById('refreshLogrosBtn').addEventListener('click', loadLogros);
             document.getElementById('volverBtn').addEventListener('click', volverAListaMisiones);
             document.getElementById('terminarBtn').addEventListener('click', terminarMision);
 

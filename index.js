@@ -2,45 +2,54 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
-const cookieParser = require("cookie-parser"); // agregado
+const cookieParser = require("cookie-parser");
+require("dotenv").config();
 
-require("dotenv").config(); // Cargar variables de entorno desde el archivo .env
 const app = express();
 
-// Importar rutas
+// Rutas
 const userRoutes = require("./routes/users.routes");
-const misionRoutes = require("./routes/mision.routes"); // agregado
+const misionRoutes = require("./routes/mision.routes");
+const logroRoutes = require("./routes/logro.routes"); // nueva ruta de logros
 
-// Obtener las variables de entorno
+// Configuración
 const mongoURI = process.env.MONGO_URI;
-const port = process.env.PORT || 3000; // Si no se define el puerto en .env, usa el 3000
+const port = process.env.PORT || 3000;
 
-// Conexión a la base de datos (MongoDB)
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("Conexión a MongoDB exitosa"))
-    .catch((err) => console.log("Error en la conexión a MongoDB:", err));
+  .then(() => console.log("Conexión a MongoDB exitosa"))
+  .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
-// Middleware
+// Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cookieParser()); // usado para leer/escribir cookies
+app.use(cookieParser());
 
-// Servir archivos estáticos desde la carpeta views (inicio.html estará accesible)
+// Servir archivos estáticos (views)
 app.use(express.static(path.join(__dirname, "views")));
 
-// Rutas: delegar raíz a userRoutes que maneja creación/validación de usuario
-app.use("/", userRoutes);
+// Rutas públicas / vistas y API
+app.use("/", userRoutes);            // crea/valida cookie y devuelve inicio.html
+app.use("/misiones", misionRoutes);  // API de misiones
+app.use("/logros", logroRoutes);     // API de logros (GET /logros/actual)
 
-// Exponer API de misiones en /misiones
-app.use("/misiones", misionRoutes);
-
-// Ruta explícita para abrir la página de inicio
+// Ruta explícita para abrir la página de inicio (opcional)
 app.get("/inicio", (req, res) => {
-    res.sendFile(path.join(__dirname, "views", "inicio.html"));
+  res.sendFile(path.join(__dirname, "views", "inicio.html"));
 });
 
-// Iniciar el servidor
+// 404
+app.use((req, res) => {
+  res.status(404).json({ message: "Endpoint no encontrado" });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error("Error inesperado:", err);
+  res.status(500).json({ message: "Error interno del servidor" });
+});
+
 app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`Servidor corriendo en http://localhost:${port}`);
 });
 
