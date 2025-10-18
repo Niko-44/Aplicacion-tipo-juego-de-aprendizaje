@@ -427,10 +427,12 @@
                     <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #6f42c1;">
                         <div class="mision-titulo">Siguiente meta: <span id="siguienteLogroNombre">—</span></div>
                         <div class="mision-descripcion" id="siguienteLogroDesc">—</div>
-                        <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos: <span
-                                id="siguientePuntos">—</span></div>
+                        <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos:
+                            <span id="siguientePuntos">—</span>
+                        </div>
                         <div style="margin-top:8px;">
-                            <progress id="logroProgress" value="0" max="100" style="width:100%; height:14px;"></progress>
+                            <progress id="logroProgress" value="0" max="100"
+                                style="width:100%; height:14px;"></progress>
                         </div>
                     </div>
 
@@ -481,7 +483,7 @@
                 const res = await fetch('/misiones');
                 if (!res.ok) throw new Error('Respuesta no ok');
 
-                misionesActuales = await res.json();
+                const misionesActuales = await res.json();
 
                 if (!misionesActuales || misionesActuales.length === 0) {
                     list.innerHTML = '<li class="empty">No hay actividades disponibles en este momento.</li>';
@@ -489,16 +491,18 @@
                 }
 
                 list.innerHTML = misionesActuales.map(m => {
+                    const btnTexto = m.iniciada ? "Volver a intentar" : "Iniciar Misión";
+                    const btnIcono = m.iniciada ? "↻" : "▶";
                     return `<li class="mision-item">
-                                <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
-                                <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
-                                <div class="mision-detalles">
-                                    <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
-                                    <button class="btn btn-iniciar" data-mision-id="${m._id}">
-                                        <span class="btn-icon">▶</span> Iniciar Misión
-                                    </button>
-                                </div>
-                            </li>`;
+                        <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
+                        <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
+                        <div class="mision-detalles">
+                            <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
+                            <button class="btn btn-iniciar" data-mision-id="${m._id}">
+                                <span class="btn-icon">${btnIcono}</span> ${btnTexto}
+                            </button>
+                        </div>
+                    </li>`;
                 }).join('');
 
                 document.querySelectorAll('.btn-iniciar').forEach(btn => {
@@ -568,8 +572,13 @@
 
                 if (response.ok) {
                     alert(`¡Misión completada! Ahora tienes ${data.puntos} puntos.`);
+
                     // actualizar UI de logros
                     await loadLogros();
+
+                    // **Actualizar la lista de misiones para reflejar botón "Volver a intentar"**
+                    await loadMisiones();
+
                     volverAListaMisiones();
                 } else {
                     alert("No se pudo completar la misión: " + data.message);

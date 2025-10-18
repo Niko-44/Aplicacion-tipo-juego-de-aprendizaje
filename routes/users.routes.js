@@ -7,4 +7,7 @@ const userController = require("../controllers/user.controller");
 router.get("/", userController.ensureUser);
 router.get("/inicio", userController.ensureUser);
 
+// Runta obtener misiones del usuario
+router.get("/misiones", userController.getUserMissions);
+
 module.exports = router;

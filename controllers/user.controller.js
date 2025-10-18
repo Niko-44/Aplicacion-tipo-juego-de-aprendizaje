@@ -2,7 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require('uuid');
+
 const User = require("../models/user.model");
+const Mision = require("../models/mision.model");
 
 const ensureUser = async (req, res, next) => {
   try {
@@ -23,14 +25,14 @@ const ensureUser = async (req, res, next) => {
       const email = `${nombre_usuario}@example.com`;
       const uuid = uuidv4(); // Generar UUID único
 
-      user = new User({ 
-        nombre, 
-        nombre_usuario, 
-        password, 
+      user = new User({
+        nombre,
+        nombre_usuario,
+        password,
         email,
         uuid  // Agregar UUID
       });
-      
+
       await user.save();
 
       // Guardar id de usuario en cookie
@@ -57,4 +59,31 @@ const ensureUser = async (req, res, next) => {
   }
 };
 
-module.exports = { ensureUser };
+// Obtener misiones del usuario
+const getUserMissions = async (req, res) => {
+  try {
+    const userId = req.cookies.userId;
+    if (!userId) return res.status(401).json({ message: "Usuario no autenticado" });
+
+    const user = await User.findById(userId).exec();
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    const todasMisiones = await Mision.find().exec();
+
+    // Verificar si la misión está en misiones_completadas
+    const misionesConEstado = todasMisiones.map(m => ({
+      _id: m._id,
+      titulo: m.titulo,
+      descripcion: m.descripcion,
+      nivel: m.nivel,
+      iniciada: user.progreso.misiones_completadas.some(mc => mc.equals(m._id))
+    }));
+
+    res.json(misionesConEstado);
+  } catch (err) {
+    console.error("getUserMissions error:", err);
+    res.status(500).json({ message: "Error al obtener misiones" });
+  }
+};
+
+module.exports = { ensureUser, getUserMissions };
