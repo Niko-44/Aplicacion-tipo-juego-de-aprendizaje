@@ -1,5 +1,6 @@
 const Mision = require("../models/mision.model");
 const User = require("../models/user.model");
+const { Logro } = require("../models/logro.model"); // Asegúrate de importar el modelo de Logro
 
 const terminarMision = async (req, res) => {
   try {
@@ -16,9 +17,18 @@ const terminarMision = async (req, res) => {
       user.progreso.misiones_completadas.push(misionId);
       user.progreso.puntos += puntos || 10; // por defecto 10 puntos si no se especifica
       await user.save();
+
+      // Verificar logros
+      const logros = await Logro.find(); // Obtener todos los logros
+      logros.forEach(logro => {
+        if (user.progreso.puntos >= logro.puntos_requeridos && !user.progreso.logros.includes(logro._id)) {
+          user.progreso.logros.push(logro._id); // Asignar logro al usuario
+        }
+      });
+      await user.save(); // Guardar cambios en el usuario
     }
 
-    return res.json({ message: "Misión completada", puntos: user.progreso.puntos });
+    return res.json({ message: "Misión completada", puntos: user.progreso.puntos, logros: user.progreso.logros });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Error al completar la misión" });
