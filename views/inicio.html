@@ -255,6 +255,19 @@
             background-color: #c82333;
         }
 
+        /* NUEVO: Botón de Text-to-Speech */
+        .btn-tts {
+            background-color: #6f42c1; /* Color morado */
+        }
+
+        .btn-tts:hover {
+            background-color: #5a359d;
+        }
+
+        .btn-tts.playing {
+            background-color: #e83e8c; /* Color rosa cuando está reproduciendo */
+        }
+
         .btn-container {
             display: flex;
             gap: 15px;
@@ -311,6 +324,15 @@
             padding: 10px;
             background-color: var(--light-gray);
             border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* NUEVO: Indicador de paso actual en reproducción */
+        .paso-activo {
+            background-color: #d1ecf1 !important;
+            border-left: 4px solid #17a2b8;
         }
 
         /* NUEVO: Estilo para las pestañas de contenido */
@@ -321,6 +343,56 @@
 
         .tab-content.active {
             display: block;
+        }
+
+        /* NUEVO: Estilo para el tip de ayuda */
+        .tip-ayuda {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        .tip-ayuda h4 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: var(--font-size-normal);
+        }
+
+        .tip-ayuda p {
+            color: #856404;
+            margin: 0;
+        }
+
+        /* NUEVO: Controles de TTS */
+        .tts-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .tts-speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tts-speed-control label {
+            font-size: var(--font-size-small);
+            color: var(--medium-gray);
+        }
+
+        .tts-speed-control select {
+            padding: 5px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--light-gray);
+            background-color: white;
         }
 
         @keyframes fadeIn {
@@ -390,6 +462,11 @@
             .tab {
                 padding: 12px 15px;
             }
+
+            .tts-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
         @media (max-width: 480px) {
@@ -455,6 +532,13 @@
                 <!-- Sección principal de misiones -->
                 <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
                     <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
+                    
+                    <!-- NUEVO: Tip de ayuda general -->
+                    <div id="tipGeneral" class="tip-ayuda">
+                        <h4>💡 Consejo del día</h4>
+                        <p id="tipGeneralText">Cada toque en la pantalla es un paso más para comunicarte mejor...</p>
+                    </div>
+                    
                     <ul id="misionesList" class="misiones-list">
                         <li class="loading">Cargando actividades...</li>
                     </ul>
@@ -472,6 +556,28 @@
                             <div class="mision-detalles-descripcion">Descripción de la misión</div>
                         </div>
                         <div class="mision-detalles-nivel">Nivel: Principiante</div>
+                    </div>
+
+                    <!-- NUEVO: Tip específico para la misión -->
+                    <div id="tipMision" class="tip-ayuda">
+                        <h4>💡 Tip de apoyo</h4>
+                        <p id="tipMisionText">Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.</p>
+                    </div>
+
+                    <!-- NUEVO: Controles de Text-to-Speech -->
+                    <div class="tts-controls">
+                        <button id="ttsBtn" class="btn btn-tts">
+                            <span class="btn-icon">🔊</span> Escuchar Pasos
+                        </button>
+                        <div class="tts-speed-control">
+                            <label for="ttsSpeed">Velocidad:</label>
+                            <select id="ttsSpeed">
+                                <option value="0.5">Lenta</option>
+                                <option value="0.8" selected>Normal</option>
+                                <option value="1.2">Rápida</option>
+                                <option value="1.5">Muy rápida</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="pasos-section">
@@ -550,9 +656,173 @@
             return v ? decodeURIComponent(v.pop()) : null;
         }
 
+        // NUEVO: Tips hardcodeados para las misiones
+        const tipsGenerales = [
+            "Cada toque en la pantalla es un paso más para comunicarte mejor...",
+            "Recuerda que puedes pedir ayuda en cualquier momento.",
+            "La práctica constante te ayudará a ganar confianza con la tecnología.",
+            "No te preocupes por cometer errores, son parte del aprendizaje.",
+            "Celebra cada pequeño logro, ¡cada paso cuenta!"
+        ];
+
+        const tipsPorMision = {
+            "llamada": "Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.",
+            "mensaje": "Recuerda que puedes usar el micrófono para enviar mensajes de voz en lugar de escribir.",
+            "wifi": "Si tienes problemas para conectar, verifica que la contraseña sea correcta.",
+            "volumen": "Puedes ajustar el volumen usando los botones físicos del dispositivo.",
+            "fotos": "Mantén la cámara estable para obtener fotos más claras.",
+            "navegacion": "Usa la barra de direcciones para escribir directamente la página que quieres visitar."
+        };
+
         // Variables globales
         let misionesActuales = [];
         let misionActualId = null;
+        
+        // NUEVO: Variables para Text-to-Speech
+        let ttsActivo = false;
+        let ttsUtterance = null;
+        let pasoActual = 0;
+        let pasosTexto = [];
+
+        // NUEVO: Función para obtener un tip aleatorio
+        function obtenerTipAleatorio(tipsArray) {
+            const indice = Math.floor(Math.random() * tipsArray.length);
+            return tipsArray[indice];
+        }
+
+        // NUEVO: Función para obtener tip específico para una misión
+        function obtenerTipParaMision(tituloMision) {
+            // Buscar palabras clave en el título para determinar el tip
+            const titulo = tituloMision.toLowerCase();
+            
+            if (titulo.includes('llamada') || titulo.includes('llamar')) {
+                return tipsPorMision.llamada;
+            } else if (titulo.includes('mensaje') || titulo.includes('whatsapp')) {
+                return tipsPorMision.mensaje;
+            } else if (titulo.includes('wifi') || titulo.includes('conectar')) {
+                return tipsPorMision.wifi;
+            } else if (titulo.includes('volumen') || titulo.includes('brillo')) {
+                return tipsPorMision.volumen;
+            } else if (titulo.includes('foto') || titulo.includes('cámara')) {
+                return tipsPorMision.fotos;
+            } else if (titulo.includes('navegar') || titulo.includes('internet')) {
+                return tipsPorMision.navegacion;
+            } else {
+                // Tip genérico si no hay coincidencia
+                return "Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.";
+            }
+        }
+
+        // NUEVO: Función para actualizar el tip general
+        function actualizarTipGeneral() {
+            const tipElement = document.getElementById('tipGeneralText');
+            if (tipElement) {
+                tipElement.textContent = obtenerTipAleatorio(tipsGenerales);
+            }
+        }
+
+        // NUEVO: Función para actualizar el tip específico de misión
+        function actualizarTipMision(tituloMision) {
+            const tipElement = document.getElementById('tipMisionText');
+            if (tipElement) {
+                tipElement.textContent = obtenerTipParaMision(tituloMision);
+            }
+        }
+
+        // NUEVO: Funciones para Text-to-Speech
+        function inicializarTTS() {
+            // Verificar si el navegador soporta la API de SpeechSynthesis
+            if (!('speechSynthesis' in window)) {
+                alert('Tu navegador no soporta la función de texto a voz. Por favor, utiliza un navegador más moderno.');
+                document.getElementById('ttsBtn').disabled = true;
+                return false;
+            }
+            
+            // Configurar evento para cuando termine la síntesis de voz
+            window.speechSynthesis.onend = function() {
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+                resetearResaltadoPasos();
+            };
+            
+            return true;
+        }
+
+        function reproducirPasos() {
+            if (ttsActivo) {
+                // Si ya está reproduciendo, detener
+                window.speechSynthesis.cancel();
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+                resetearResaltadoPasos();
+                return;
+            }
+            
+            if (pasosTexto.length === 0) {
+                alert('No hay pasos para reproducir.');
+                return;
+            }
+            
+            ttsActivo = true;
+            document.getElementById('ttsBtn').classList.add('playing');
+            document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">⏹️</span> Detener';
+            
+            // Obtener velocidad seleccionada
+            const velocidad = parseFloat(document.getElementById('ttsSpeed').value);
+            
+            // Reproducir los pasos
+            pasoActual = 0;
+            reproducirSiguientePaso(velocidad);
+        }
+
+        function reproducirSiguientePaso(velocidad) {
+            if (pasoActual >= pasosTexto.length || !ttsActivo) {
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+                resetearResaltadoPasos();
+                return;
+            }
+            
+            // Resaltar el paso actual
+            resetearResaltadoPasos();
+            const elementosPasos = document.querySelectorAll('#pasosList li');
+            if (elementosPasos[pasoActual]) {
+                elementosPasos[pasoActual].classList.add('paso-activo');
+            }
+            
+            // Crear y configurar el utterance
+            ttsUtterance = new SpeechSynthesisUtterance(pasosTexto[pasoActual]);
+            ttsUtterance.lang = 'es-ES';
+            ttsUtterance.rate = velocidad;
+            ttsUtterance.pitch = 1;
+            ttsUtterance.volume = 1;
+            
+            // Cuando termine este paso, pasar al siguiente
+            ttsUtterance.onend = function() {
+                pasoActual++;
+                reproducirSiguientePaso(velocidad);
+            };
+            
+            // Reproducir
+            window.speechSynthesis.speak(ttsUtterance);
+        }
+
+        function resetearResaltadoPasos() {
+            const elementosPasos = document.querySelectorAll('#pasosList li');
+            elementosPasos.forEach(paso => {
+                paso.classList.remove('paso-activo');
+            });
+        }
+
+        function prepararPasosParaTTS(pasos) {
+            pasosTexto = [];
+            pasos.forEach((paso, index) => {
+                pasosTexto.push(`Paso ${index + 1}: ${paso}`);
+            });
+        }
 
         // NUEVO: Función para cambiar entre pestañas
         function cambiarPestaña(pestañaId) {
@@ -588,7 +858,7 @@
                 const res = await fetch('/misiones');
                 if (!res.ok) throw new Error('Respuesta no ok');
 
-                const misionesActuales = await res.json();
+                misionesActuales = await res.json();
 
                 if (!misionesActuales || misionesActuales.length === 0) {
                     list.innerHTML = '<li class="empty">No hay actividades disponibles en este momento.</li>';
@@ -643,11 +913,20 @@
                 document.querySelector('.mision-detalles-descripcion').textContent = mision.descripcion;
                 document.querySelector('.mision-detalles-nivel').textContent = `Nivel: ${mision.nivel}`;
 
+                // NUEVO: Actualizar el tip específico para esta misión
+                actualizarTipMision(mision.titulo);
+
                 const pasosList = document.getElementById('pasosList');
                 if (mision.pasos && mision.pasos.length > 0) {
-                    pasosList.innerHTML = mision.pasos.map(paso => `<li>${escapeHtml(paso)}</li>`).join('');
+                    pasosList.innerHTML = mision.pasos.map((paso, index) => 
+                        `<li><span>${index + 1}.</span> ${escapeHtml(paso)}</li>`
+                    ).join('');
+                    
+                    // NUEVO: Preparar los pasos para TTS
+                    prepararPasosParaTTS(mision.pasos);
                 } else {
                     pasosList.innerHTML = '<li>No hay pasos específicos para esta misión.</li>';
+                    pasosTexto = [];
                 }
 
             } catch (error) {
@@ -659,6 +938,14 @@
 
         // Volver a lista
         function volverAListaMisiones() {
+            // NUEVO: Detener TTS si está activo
+            if (ttsActivo) {
+                window.speechSynthesis.cancel();
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+            }
+            
             document.getElementById('misionDetallesSection').style.display = 'none';
             document.getElementById('misionesSection').style.display = 'block';
             misionActualId = null;
@@ -761,6 +1048,12 @@
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function () {
+            // NUEVO: Inicializar TTS
+            inicializarTTS();
+            
+            // NUEVO: Inicializar tips
+            actualizarTipGeneral();
+            
             loadMisiones();
             loadLogros();
 
@@ -772,6 +1065,9 @@
             document.getElementById('refreshLogrosBtn').addEventListener('click', loadLogros);
             document.getElementById('volverBtn').addEventListener('click', volverAListaMisiones);
             document.getElementById('terminarBtn').addEventListener('click', terminarMision);
+            
+            // NUEVO: Event listener para el botón de TTS
+            document.getElementById('ttsBtn').addEventListener('click', reproducirPasos);
 
             const nombreUsuario = getCookie('nombreUsuario');
             if (nombreUsuario) {
