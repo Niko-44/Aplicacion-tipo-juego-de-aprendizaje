@@ -21,6 +21,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
 // Middlewares
+app.set('trust proxy', 1);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());

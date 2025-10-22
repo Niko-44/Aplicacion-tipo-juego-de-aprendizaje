@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel de Actividades</title>
+    <style>
+        /* Variables CSS para consistencia */
+        :root {
+            --primary-color: #2c6eb5;
+            --secondary-color: #4a9d5c;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --light-gray: #e9ecef;
+            --medium-gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --font-size-large: 1.5rem;
+            --font-size-medium: 1.125rem;
+            --font-size-normal: 1rem;
+            --font-size-small: 0.875rem;
+            --line-height: 1.5;
+        }
+
+        /* Reset y estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: var(--line-height);
+            font-size: var(--font-size-normal);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Cabecera */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .header h1 {
+            font-size: var(--font-size-large);
+            margin-bottom: 5px;
+        }
+
+        .welcome-message {
+            font-size: var(--font-size-medium);
+            opacity: 0.9;
+        }
+
+        /* NUEVO: Sistema de pestañas */
+        .tabs-container {
+            margin-bottom: 25px;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 20px;
+            background-color: var(--light-gray);
+            border: none;
+            font-size: var(--font-size-medium);
+            font-weight: 600;
+            color: var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tab.active {
+            background-color: var(--card-color);
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        /* Contenido principal */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Sección de misiones */
+        .misiones-section {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: var(--font-size-medium);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        /* Lista de misiones */
+        .misiones-list {
+            list-style: none;
+        }
+
+        .mision-item {
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--secondary-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mision-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mision-titulo {
+            font-size: var(--font-size-medium);
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .mision-descripcion {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .mision-detalles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mision-nivel {
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: var(--font-size-small);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        /* Estados de carga y error */
+        .loading,
+        .error,
+        .empty {
+            text-align: center;
+            padding: 30px;
+            font-size: var(--font-size-medium);
+            color: var(--medium-gray);
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        /* Botones y controles */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-normal);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: #1d5a9b;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-refresh {
+            margin-top: 15px;
+            align-self: flex-start;
+        }
+
+        .btn-iniciar {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-iniciar:hover {
+            background-color: #3d8c4d;
+        }
+
+        /* NUEVO: Estilo para el botón "Volver a intentar" */
+        .btn-reintentar {
+            background-color: #f0ad4e;
+            /* Color naranja */
+        }
+
+        .btn-reintentar:hover {
+            background-color: #ec971f;
+            /* Naranja más oscuro al hacer hover */
+        }
+
+        .btn-volver {
+            background-color: var(--medium-gray);
+        }
+
+        .btn-volver:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-terminar {
+            background-color: #dc3545;
+        }
+
+        .btn-terminar:hover {
+            background-color: #c82333;
+        }
+
+        /* NUEVO: Botón de Text-to-Speech */
+        .btn-tts {
+            background-color: #6f42c1;
+            /* Color morado */
+        }
+
+        .btn-tts:hover {
+            background-color: #5a359d;
+        }
+
+        .btn-tts.playing {
+            background-color: #e83e8c;
+            /* Color rosa cuando está reproduciendo */
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Página de detalles de misión */
+        .mision-detalles-page {
+            display: none;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .mision-detalles-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .mision-detalles-titulo {
+            color: var(--primary-color);
+            font-size: var(--font-size-large);
+            margin-bottom: 10px;
+        }
+
+        .mision-detalles-nivel {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: var(--font-size-small);
+        }
+
+        .mision-detalles-descripcion {
+            margin-bottom: 25px;
+            font-size: var(--font-size-medium);
+            line-height: 1.6;
+        }
+
+        .pasos-section {
+            margin-top: 25px;
+        }
+
+        .pasos-lista {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .pasos-lista li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* NUEVO: Indicador de paso actual en reproducción */
+        .paso-activo {
+            background-color: #d1ecf1 !important;
+            border-left: 4px solid #17a2b8;
+        }
+
+        /* NUEVO: Estilo para las pestañas de contenido */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* NUEVO: Estilo para el tip de ayuda */
+        .tip-ayuda {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        .tip-ayuda h4 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: var(--font-size-normal);
+        }
+
+        .tip-ayuda p {
+            color: #856404;
+            margin: 0;
+        }
+
+        /* NUEVO: Controles de TTS */
+        .tts-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .tts-speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tts-speed-control label {
+            font-size: var(--font-size-small);
+            color: var(--medium-gray);
+        }
+
+        .tts-speed-control select {
+            padding: 5px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--light-gray);
+            background-color: white;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--medium-gray);
+            font-size: var(--font-size-small);
+            padding: 20px;
+        }
+
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-large: 1.25rem;
+                --font-size-medium: 1rem;
+                --font-size-normal: 0.9375rem;
+                --font-size-small: 0.8125rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .misiones-section {
+                padding: 20px 15px;
+            }
+
+            .mision-item {
+                padding: 15px;
+            }
+
+            .mision-detalles {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .mision-detalles-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                padding: 12px 15px;
+            }
+
+            .tts-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 15px 10px;
+            }
+
+            .misiones-section {
+                padding: 15px 10px;
+            }
+        }
+
+        /* Mejoras de accesibilidad */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Enfoque para navegación con teclado */
+        button:focus,
+        a:focus {
+            outline: 3px solid #005fcc;
+            outline-offset: 2px;
+        }
+
+        /* Mejora de contraste para texto */
+        .high-contrast {
+            color: #000000;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Mi Panel de Actividades</h1>
+            <p class="welcome-message">Bienvenido, <span id="nombreUsuario">Usuario</span></p>
+        </header>
+
+        <!-- NUEVO: Sistema de pestañas -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button id="tabMisiones" class="tab active" data-tab="misiones">Mis Actividades</button>
+                <button id="tabLogros" class="tab" data-tab="logros">Mis Logros</button>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <!-- Pestaña de misiones -->
+            <div id="tabMisionesContent" class="tab-content active">
+                <!-- Sección principal de misiones -->
+                <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
+                    <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
+
+                    <!-- NUEVO: Tip de ayuda general -->
+                    <div id="tipGeneral" class="tip-ayuda">
+                        <h4>💡 Consejo del día</h4>
+                        <p id="tipGeneralText">Cada toque en la pantalla es un paso más para comunicarte mejor...</p>
+                    </div>
+
+                    <ul id="misionesList" class="misiones-list">
+                        <li class="loading">Cargando actividades...</li>
+                    </ul>
+                    <button id="refreshBtn" class="btn btn-refresh" aria-label="Actualizar lista de actividades">
+                        <span class="btn-icon">↻</span> Actualizar
+                    </button>
+                </section>
+
+                <!-- Página de detalles de misión -->
+                <section id="misionDetallesSection" class="mision-detalles-page" aria-labelledby="mision-detalles-title"
+                    style="display:none">
+                    <div class="mision-detalles-header">
+                        <div>
+                            <h2 id="mision-detalles-title" class="mision-detalles-titulo">Título de la Misión</h2>
+                            <div class="mision-detalles-descripcion">Descripción de la misión</div>
+                        </div>
+                        <div class="mision-detalles-nivel">Nivel: Principiante</div>
+                    </div>
+
+                    <!-- NUEVO: Tip específico para la misión -->
+                    <div id="tipMision" class="tip-ayuda">
+                        <h4>💡 Tip de apoyo</h4>
+                        <p id="tipMisionText">Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las
+                            veces que quieras.</p>
+                    </div>
+
+                    <!-- NUEVO: Controles de Text-to-Speech -->
+                    <div class="tts-controls">
+                        <button id="ttsBtn" class="btn btn-tts">
+                            <span class="btn-icon">🔊</span> Escuchar Pasos
+                        </button>
+                        <div class="tts-speed-control">
+                            <label for="ttsSpeed">Velocidad:</label>
+                            <select id="ttsSpeed">
+                                <option value="0.5">Lenta</option>
+                                <option value="0.8" selected>Normal</option>
+                                <option value="1.2">Rápida</option>
+                                <option value="1.5">Muy rápida</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pasos-section">
+                        <h3 class="section-title">Pasos a seguir</h3>
+                        <ol id="pasosList" class="pasos-lista">
+                            <!-- Los pasos se cargarán dinámicamente aquí -->
+                        </ol>
+                    </div>
+
+                    <div class="btn-container">
+                        <button id="volverBtn" class="btn btn-volver">
+                            <span class="btn-icon">←</span> Volver
+                        </button>
+                        <button id="terminarBtn" class="btn btn-terminar">
+                            <span class="btn-icon">✓</span> Terminar Misión
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Pestaña de logros -->
+            <div id="tabLogrosContent" class="tab-content">
+                <!-- Sección de logros -->
+                <section id="logrosSection" class="misiones-section" aria-labelledby="logros-title">
+                    <h2 id="logros-title" class="section-title">Mis Logros</h2>
+
+                    <div id="logrosContent">
+                        <div id="logroActualCard" class="mision-item" style="border-left-color: #f0ad4e;">
+                            <div class="mision-titulo">Logro actual: <span id="logroActualNombre">—</span></div>
+                            <div class="mision-descripcion" id="logroActualDesc">—</div>
+                            <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos: <span
+                                    id="puntosUsuario">0</span></div>
+                        </div>
+
+                        <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #6f42c1;">
+                            <div class="mision-titulo">Siguiente meta: <span id="siguienteLogroNombre">—</span></div>
+                            <div class="mision-descripcion" id="siguienteLogroDesc">—</div>
+                            <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos:
+                                <span id="siguientePuntos">—</span>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <progress id="logroProgress" value="0" max="100"
+                                    style="width:100%; height:14px;"></progress>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:15px;">
+                            <h3 class="section-title" style="margin-bottom:10px">Logros desbloqueados</h3>
+                            <ul id="logrosDesbloqueadosList" class="misiones-list">
+                                <li class="empty">Cargando logros...</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-top:12px;">
+                            <button id="refreshLogrosBtn" class="btn btn-refresh">↻ Actualizar logros</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2023 Mi Panel de Actividades - Diseñado para ser accesible y fácil de usar</p>
+        </footer>
+    </div>
+
+    <script>
+
+        // Utilidades
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function getCookie(name) {
+            const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return v ? decodeURIComponent(v.pop()) : null;
+        }
+
+        // NUEVO: Tips hardcodeados para las misiones
+        const tipsGenerales = [
+            "Cada toque en la pantalla es un paso más para comunicarte mejor...",
+            "Recuerda que puedes pedir ayuda en cualquier momento.",
+            "La práctica constante te ayudará a ganar confianza con la tecnología.",
+            "No te preocupes por cometer errores, son parte del aprendizaje.",
+            "Celebra cada pequeño logro, ¡cada paso cuenta!"
+        ];
+
+        const tipsPorMision = {
+            "llamada": "Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.",
+            "mensaje": "Recuerda que puedes usar el micrófono para enviar mensajes de voz en lugar de escribir.",
+            "wifi": "Si tienes problemas para conectar, verifica que la contraseña sea correcta.",
+            "volumen": "Puedes ajustar el volumen usando los botones físicos del dispositivo.",
+            "fotos": "Mantén la cámara estable para obtener fotos más claras.",
+            "navegacion": "Usa la barra de direcciones para escribir directamente la página que quieres visitar."
+        };
+
+        // Variables globales
+        let misionesActuales = [];
+        let misionActualId = null;
+
+        // NUEVO: Variables para Text-to-Speech
+        let ttsActivo = false;
+        let ttsUtterance = null;
+        let pasoActual = 0;
+        let pasosTexto = [];
+
+        // NUEVO: Función para obtener un tip aleatorio
+        function obtenerTipAleatorio(tipsArray) {
+            const indice = Math.floor(Math.random() * tipsArray.length);
+            return tipsArray[indice];
+        }
+
+        // NUEVO: Función para obtener tip específico para una misión
+        function obtenerTipParaMision(tituloMision) {
+            // Buscar palabras clave en el título para determinar el tip
+            const titulo = tituloMision.toLowerCase();
+
+            if (titulo.includes('llamada') || titulo.includes('llamar')) {
+                return tipsPorMision.llamada;
+            } else if (titulo.includes('mensaje') || titulo.includes('whatsapp')) {
+                return tipsPorMision.mensaje;
+            } else if (titulo.includes('wifi') || titulo.includes('conectar')) {
+                return tipsPorMision.wifi;
+            } else if (titulo.includes('volumen') || titulo.includes('brillo')) {
+                return tipsPorMision.volumen;
+            } else if (titulo.includes('foto') || titulo.includes('cámara')) {
+                return tipsPorMision.fotos;
+            } else if (titulo.includes('navegar') || titulo.includes('internet')) {
+                return tipsPorMision.navegacion;
+            } else {
+                // Tip genérico si no hay coincidencia
+                return "Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.";
+            }
+        }
+
+        // NUEVO: Función para actualizar el tip general
+        function actualizarTipGeneral() {
+            const tipElement = document.getElementById('tipGeneralText');
+            if (tipElement) {
+                tipElement.textContent = obtenerTipAleatorio(tipsGenerales);
+            }
+        }
+
+        // NUEVO: Función para actualizar el tip específico de misión
+        function actualizarTipMision(tituloMision) {
+            const tipElement = document.getElementById('tipMisionText');
+            if (tipElement) {
+                tipElement.textContent = obtenerTipParaMision(tituloMision);
+            }
+        }
+
+        // NUEVO: Funciones para Text-to-Speech
+        function inicializarTTS() {
+            // Verificar si el navegador soporta la API de SpeechSynthesis
+            if (!('speechSynthesis' in window)) {
+                alert('Tu navegador no soporta la función de texto a voz. Por favor, utiliza un navegador más moderno.');
+                document.getElementById('ttsBtn').disabled = true;
+                return false;
+            }
+
+            // Configurar evento para cuando termine la síntesis de voz
+            window.speechSynthesis.onend = function () {
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+                resetearResaltadoPasos();
+            };
+
+            return true;
+        }
+
+        function reproducirPasos() {
+            if (ttsActivo) {
+                // Si ya está reproduciendo, detener
+                window.speechSynthesis.cancel();
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+                resetearResaltadoPasos();
+                return;
+            }
+
+            if (pasosTexto.length === 0) {
+                alert('No hay pasos para reproducir.');
+                return;
+            }
+
+            ttsActivo = true;
+            document.getElementById('ttsBtn').classList.add('playing');
+            document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">⏹️</span> Detener';
+
+            // Obtener velocidad seleccionada
+            const velocidad = parseFloat(document.getElementById('ttsSpeed').value);
+
+            // Reproducir los pasos
+            pasoActual = 0;
+            reproducirSiguientePaso(velocidad);
+        }
+
+        function reproducirSiguientePaso(velocidad) {
+            if (pasoActual >= pasosTexto.length || !ttsActivo) {
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+                resetearResaltadoPasos();
+                return;
+            }
+
+            // Resaltar el paso actual
+            resetearResaltadoPasos();
+            const elementosPasos = document.querySelectorAll('#pasosList li');
+            if (elementosPasos[pasoActual]) {
+                elementosPasos[pasoActual].classList.add('paso-activo');
+            }
+
+            // Crear y configurar el utterance
+            ttsUtterance = new SpeechSynthesisUtterance(pasosTexto[pasoActual]);
+            ttsUtterance.lang = 'es-ES';
+            ttsUtterance.rate = velocidad;
+            ttsUtterance.pitch = 1;
+            ttsUtterance.volume = 1;
+
+            // Cuando termine este paso, pasar al siguiente
+            ttsUtterance.onend = function () {
+                pasoActual++;
+                reproducirSiguientePaso(velocidad);
+            };
+
+            // Reproducir
+            window.speechSynthesis.speak(ttsUtterance);
+        }
+
+        function resetearResaltadoPasos() {
+            const elementosPasos = document.querySelectorAll('#pasosList li');
+            elementosPasos.forEach(paso => {
+                paso.classList.remove('paso-activo');
+            });
+        }
+
+        function prepararPasosParaTTS(pasos) {
+            pasosTexto = [];
+            pasos.forEach((paso, index) => {
+                pasosTexto.push(`Paso ${index + 1}: ${paso}`);
+            });
+        }
+
+        // NUEVO: Función para cambiar entre pestañas
+        function cambiarPestaña(pestañaId) {
+            // Ocultar todas las pestañas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Desactivar todos los botones de pestaña
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Activar la pestaña seleccionada
+            document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}Content`).classList.add('active');
+            document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}`).classList.add('active');
+
+            // Si estamos en la pestaña de logros, actualizamos los datos
+            if (pestañaId === 'logros') {
+                loadLogros();
+            }
+        }
+
+        // Cargar misiones
+        async function loadMisiones() {
+            const list = document.getElementById('misionesList');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            try {
+                list.innerHTML = '<li class="loading">Cargando actividades...</li>';
+                refreshBtn.disabled = true;
+
+                const res = await fetch('/misiones');
+                if (!res.ok) throw new Error('Respuesta no ok');
+
+                misionesActuales = await res.json();
+
+                if (!misionesActuales || misionesActuales.length === 0) {
+                    list.innerHTML = '<li class="empty">No hay actividades disponibles en este momento.</li>';
+                    return;
+                }
+
+                list.innerHTML = misionesActuales.map(m => {
+                    const btnTexto = m.iniciada ? "Volver a intentar" : "Iniciar Misión";
+                    const btnIcono = m.iniciada ? "↻" : "▶";
+                    const btnClase = m.iniciada ? "btn-reintentar" : "btn-iniciar";
+
+                    return `<li class="mision-item">
+                        <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
+                        <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
+                        <div class="mision-detalles">
+                            <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
+                            <button class="btn ${btnClase}" data-mision-id="${m._id}">
+                                <span class="btn-icon">${btnIcono}</span> ${btnTexto}
+                            </button>
+                        </div>
+                    </li>`;
+                }).join('');
+
+                document.querySelectorAll('.btn-iniciar, .btn-reintentar').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const misionId = this.getAttribute('data-mision-id');
+                        mostrarDetallesMision(misionId);
+                    });
+                });
+
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = '<li class="error">Error al cargar las actividades. Por favor, intente nuevamente.</li>';
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Mostrar detalles de misión
+        async function mostrarDetallesMision(misionId) {
+            try {
+                misionActualId = misionId;
+                document.getElementById('misionesSection').style.display = 'none';
+                document.getElementById('misionDetallesSection').style.display = 'block';
+
+                const res = await fetch(`/misiones/${misionId}`);
+                if (!res.ok) throw new Error('Error al cargar los detalles de la misión');
+
+                const mision = await res.json();
+
+                document.getElementById('mision-detalles-title').textContent = mision.titulo;
+                document.querySelector('.mision-detalles-descripcion').textContent = mision.descripcion;
+                document.querySelector('.mision-detalles-nivel').textContent = `Nivel: ${mision.nivel}`;
+
+                // NUEVO: Actualizar el tip específico para esta misión
+                actualizarTipMision(mision.titulo);
+
+                const pasosList = document.getElementById('pasosList');
+                if (mision.pasos && mision.pasos.length > 0) {
+                    pasosList.innerHTML = mision.pasos.map((paso, index) =>
+                        `<li><span>${index + 1}.</span> ${escapeHtml(paso)}</li>`
+                    ).join('');
+
+                    // NUEVO: Preparar los pasos para TTS
+                    prepararPasosParaTTS(mision.pasos);
+                } else {
+                    pasosList.innerHTML = '<li>No hay pasos específicos para esta misión.</li>';
+                    pasosTexto = [];
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert('Error al cargar los detalles de la misión. Por favor, intente nuevamente.');
+                volverAListaMisiones();
+            }
+        }
+
+        // Volver a lista
+        function volverAListaMisiones() {
+            // NUEVO: Detener TTS si está activo
+            if (ttsActivo) {
+                window.speechSynthesis.cancel();
+                ttsActivo = false;
+                document.getElementById('ttsBtn').classList.remove('playing');
+                document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
+            }
+
+            document.getElementById('misionDetallesSection').style.display = 'none';
+            document.getElementById('misionesSection').style.display = 'block';
+            misionActualId = null;
+        }
+
+        // Terminar misión
+        async function terminarMision() {
+            if (!misionActualId) return alert("No se ha seleccionado ninguna misión");
+
+            try {
+                const response = await fetch("/misiones/terminar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ misionId: misionActualId, puntos: 10 })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`¡Misión completada! Ahora tienes ${data.puntos} puntos.`);
+
+                    // actualizar UI de logros
+                    await loadLogros();
+
+                    // **Actualizar la lista de misiones para reflejar botón "Volver a intentar"**
+                    await loadMisiones();
+
+                    volverAListaMisiones();
+                } else {
+                    alert("No se pudo completar la misión: " + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error al comunicarse con el servidor");
+            }
+        }
+
+        // NUEVAS FUNCIONES: Logros
+        async function loadLogros() {
+            try {
+                document.getElementById('logrosDesbloqueadosList').innerHTML = '<li class="loading">Cargando logros...</li>';
+
+                const [actualRes, desbloqRes] = await Promise.all([
+                    fetch('/logros/actual'),
+                    fetch('/logros/desbloqueados')
+                ]);
+
+                if (!actualRes.ok) throw new Error('Error al obtener logro actual');
+                if (!desbloqRes.ok) throw new Error('Error al obtener logros desbloqueados');
+
+                const actualData = await actualRes.json();
+                const desbloqData = await desbloqRes.json();
+
+                // puntos y logro actual
+                const puntos = actualData.puntos || 0;
+                document.getElementById('puntosUsuario').textContent = puntos;
+
+                if (actualData.logroActual) {
+                    document.getElementById('logroActualNombre').textContent = actualData.logroActual.nombre;
+                    document.getElementById('logroActualDesc').textContent = actualData.logroActual.descripcion;
+                } else {
+                    document.getElementById('logroActualNombre').textContent = '—';
+                    document.getElementById('logroActualDesc').textContent = 'Aún no has desbloqueado ningún logro.';
+                }
+
+                if (actualData.siguienteLogro) {
+                    const s = actualData.siguienteLogro;
+                    document.getElementById('siguienteLogroNombre').textContent = s.nombre;
+                    document.getElementById('siguienteLogroDesc').textContent = s.descripcion;
+                    document.getElementById('siguientePuntos').textContent = s.puntos_requeridos;
+
+                    // calcular progreso porcentual hacia siguiente logro
+                    const prev = (actualData.logroActual && actualData.logroActual.puntos_requeridos) ? actualData.logroActual.puntos_requeridos : 0;
+                    const progress = Math.min(100, Math.round(((puntos - prev) / (s.puntos_requeridos - prev || 1)) * 100));
+                    const progEl = document.getElementById('logroProgress');
+                    progEl.value = progress;
+                    progEl.max = 100;
+                } else {
+                    document.getElementById('siguienteLogroNombre').textContent = '—';
+                    document.getElementById('siguienteLogroDesc').textContent = 'No hay más logros definidos.';
+                    document.getElementById('siguientePuntos').textContent = '—';
+                    const progEl = document.getElementById('logroProgress');
+                    progEl.value = 100;
+                }
+
+                // lista de logros desbloqueados desde /logros/desbloqueados
+                const listEl = document.getElementById('logrosDesbloqueadosList');
+                const desbloqueados = desbloqData.logros || [];
+                if (!desbloqueados.length) {
+                    listEl.innerHTML = '<li class="empty">No has desbloqueado logros aún.</li>';
+                } else {
+                    listEl.innerHTML = desbloqueados.map(l => `<li class="mision-item"><div class="mision-titulo">${escapeHtml(l.nombre)}</div><div class="mision-descripcion">${escapeHtml(l.descripcion)}</div><div style="margin-top:8px;color:var(--medium-gray)">Requiere ${l.puntos_requeridos} pts</div></li>`).join('');
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('logrosDesbloqueadosList').innerHTML = '<li class="error">Error al cargar logros. Intenta nuevamente.</li>';
+            }
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            // NUEVO: Inicializar TTS
+            inicializarTTS();
+
+            // NUEVO: Inicializar tips
+            actualizarTipGeneral();
+
+            loadMisiones();
+            loadLogros();
+
+            // NUEVO: Event listeners para las pestañas
+            document.getElementById('tabMisiones').addEventListener('click', () => cambiarPestaña('misiones'));
+            document.getElementById('tabLogros').addEventListener('click', () => cambiarPestaña('logros'));
+
+            document.getElementById('refreshBtn').addEventListener('click', loadMisiones);
+            document.getElementById('refreshLogrosBtn').addEventListener('click', loadLogros);
+            document.getElementById('volverBtn').addEventListener('click', volverAListaMisiones);
+            document.getElementById('terminarBtn').addEventListener('click', terminarMision);
+
+            // NUEVO: Event listener para el botón de TTS
+            document.getElementById('ttsBtn').addEventListener('click', reproducirPasos);
+
+            const nombreUsuario = getCookie('nombreUsuario');
+            if (nombreUsuario) {
+                document.getElementById('nombreUsuario').textContent = nombreUsuario;
+            }
+        });
+    </script>
+</body>
+
+</html>
