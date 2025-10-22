@@ -2,8 +2,13 @@
 <html lang="es">
 
 <head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1976d2">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
     <title>Mi Panel de Actividades</title>
     <style>
         /* Variables CSS para consistencia */
@@ -232,11 +237,13 @@
 
         /* NUEVO: Estilo para el botón "Volver a intentar" */
         .btn-reintentar {
-            background-color: #f0ad4e; /* Color naranja */
+            background-color: #f0ad4e;
+            /* Color naranja */
         }
 
         .btn-reintentar:hover {
-            background-color: #ec971f; /* Naranja más oscuro al hacer hover */
+            background-color: #ec971f;
+            /* Naranja más oscuro al hacer hover */
         }
 
         .btn-volver {
@@ -257,7 +264,8 @@
 
         /* NUEVO: Botón de Text-to-Speech */
         .btn-tts {
-            background-color: #6f42c1; /* Color morado */
+            background-color: #6f42c1;
+            /* Color morado */
         }
 
         .btn-tts:hover {
@@ -265,7 +273,8 @@
         }
 
         .btn-tts.playing {
-            background-color: #e83e8c; /* Color rosa cuando está reproduciendo */
+            background-color: #e83e8c;
+            /* Color rosa cuando está reproduciendo */
         }
 
         .btn-container {
@@ -396,8 +405,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         /* Footer */
@@ -532,13 +546,13 @@
                 <!-- Sección principal de misiones -->
                 <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
                     <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
-                    
+
                     <!-- NUEVO: Tip de ayuda general -->
                     <div id="tipGeneral" class="tip-ayuda">
                         <h4>💡 Consejo del día</h4>
                         <p id="tipGeneralText">Cada toque en la pantalla es un paso más para comunicarte mejor...</p>
                     </div>
-                    
+
                     <ul id="misionesList" class="misiones-list">
                         <li class="loading">Cargando actividades...</li>
                     </ul>
@@ -561,7 +575,8 @@
                     <!-- NUEVO: Tip específico para la misión -->
                     <div id="tipMision" class="tip-ayuda">
                         <h4>💡 Tip de apoyo</h4>
-                        <p id="tipMisionText">Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.</p>
+                        <p id="tipMisionText">Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las
+                            veces que quieras.</p>
                     </div>
 
                     <!-- NUEVO: Controles de Text-to-Speech -->
@@ -677,7 +692,7 @@
         // Variables globales
         let misionesActuales = [];
         let misionActualId = null;
-        
+
         // NUEVO: Variables para Text-to-Speech
         let ttsActivo = false;
         let ttsUtterance = null;
@@ -694,7 +709,7 @@
         function obtenerTipParaMision(tituloMision) {
             // Buscar palabras clave en el título para determinar el tip
             const titulo = tituloMision.toLowerCase();
-            
+
             if (titulo.includes('llamada') || titulo.includes('llamar')) {
                 return tipsPorMision.llamada;
             } else if (titulo.includes('mensaje') || titulo.includes('whatsapp')) {
@@ -737,15 +752,15 @@
                 document.getElementById('ttsBtn').disabled = true;
                 return false;
             }
-            
+
             // Configurar evento para cuando termine la síntesis de voz
-            window.speechSynthesis.onend = function() {
+            window.speechSynthesis.onend = function () {
                 ttsActivo = false;
                 document.getElementById('ttsBtn').classList.remove('playing');
                 document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
                 resetearResaltadoPasos();
             };
-            
+
             return true;
         }
 
@@ -759,19 +774,19 @@
                 resetearResaltadoPasos();
                 return;
             }
-            
+
             if (pasosTexto.length === 0) {
                 alert('No hay pasos para reproducir.');
                 return;
             }
-            
+
             ttsActivo = true;
             document.getElementById('ttsBtn').classList.add('playing');
             document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">⏹️</span> Detener';
-            
+
             // Obtener velocidad seleccionada
             const velocidad = parseFloat(document.getElementById('ttsSpeed').value);
-            
+
             // Reproducir los pasos
             pasoActual = 0;
             reproducirSiguientePaso(velocidad);
@@ -785,27 +800,27 @@
                 resetearResaltadoPasos();
                 return;
             }
-            
+
             // Resaltar el paso actual
             resetearResaltadoPasos();
             const elementosPasos = document.querySelectorAll('#pasosList li');
             if (elementosPasos[pasoActual]) {
                 elementosPasos[pasoActual].classList.add('paso-activo');
             }
-            
+
             // Crear y configurar el utterance
             ttsUtterance = new SpeechSynthesisUtterance(pasosTexto[pasoActual]);
             ttsUtterance.lang = 'es-ES';
             ttsUtterance.rate = velocidad;
             ttsUtterance.pitch = 1;
             ttsUtterance.volume = 1;
-            
+
             // Cuando termine este paso, pasar al siguiente
-            ttsUtterance.onend = function() {
+            ttsUtterance.onend = function () {
                 pasoActual++;
                 reproducirSiguientePaso(velocidad);
             };
-            
+
             // Reproducir
             window.speechSynthesis.speak(ttsUtterance);
         }
@@ -830,16 +845,16 @@
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Desactivar todos los botones de pestaña
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Activar la pestaña seleccionada
             document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}Content`).classList.add('active');
             document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}`).classList.add('active');
-            
+
             // Si estamos en la pestaña de logros, actualizamos los datos
             if (pestañaId === 'logros') {
                 loadLogros();
@@ -869,7 +884,7 @@
                     const btnTexto = m.iniciada ? "Volver a intentar" : "Iniciar Misión";
                     const btnIcono = m.iniciada ? "↻" : "▶";
                     const btnClase = m.iniciada ? "btn-reintentar" : "btn-iniciar";
-                    
+
                     return `<li class="mision-item">
                         <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
                         <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
@@ -918,10 +933,10 @@
 
                 const pasosList = document.getElementById('pasosList');
                 if (mision.pasos && mision.pasos.length > 0) {
-                    pasosList.innerHTML = mision.pasos.map((paso, index) => 
+                    pasosList.innerHTML = mision.pasos.map((paso, index) =>
                         `<li><span>${index + 1}.</span> ${escapeHtml(paso)}</li>`
                     ).join('');
-                    
+
                     // NUEVO: Preparar los pasos para TTS
                     prepararPasosParaTTS(mision.pasos);
                 } else {
@@ -945,7 +960,7 @@
                 document.getElementById('ttsBtn').classList.remove('playing');
                 document.getElementById('ttsBtn').innerHTML = '<span class="btn-icon">🔊</span> Escuchar Pasos';
             }
-            
+
             document.getElementById('misionDetallesSection').style.display = 'none';
             document.getElementById('misionesSection').style.display = 'block';
             misionActualId = null;
@@ -1050,10 +1065,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             // NUEVO: Inicializar TTS
             inicializarTTS();
-            
+
             // NUEVO: Inicializar tips
             actualizarTipGeneral();
-            
+
             loadMisiones();
             loadLogros();
 
@@ -1065,7 +1080,7 @@
             document.getElementById('refreshLogrosBtn').addEventListener('click', loadLogros);
             document.getElementById('volverBtn').addEventListener('click', volverAListaMisiones);
             document.getElementById('terminarBtn').addEventListener('click', terminarMision);
-            
+
             // NUEVO: Event listener para el botón de TTS
             document.getElementById('ttsBtn').addEventListener('click', reproducirPasos);
 
@@ -1074,6 +1089,14 @@
                 document.getElementById('nombreUsuario').textContent = nombreUsuario;
             }
         });
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(() => console.log('Service Worker registrado'))
+                .catch(err => console.error('Error SW:', err));
+        }
     </script>
 </body>
 
