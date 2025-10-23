@@ -4,24 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel de Actividades</title>
+    <title>Mi Panel de Actividades - Versión Accesible</title>
     <style>
-        /* Variables CSS para consistencia */
+        /* Variables CSS para consistencia - AUMENTADAS para mejor legibilidad */
         :root {
-            --primary-color: #2c6eb5;
-            --secondary-color: #4a9d5c;
-            --background-color: #f8f9fa;
+            --primary-color: #0056b3; /* Azul más oscuro para mejor contraste */
+            --secondary-color: #2e7d32; /* Verde más oscuro para mejor contraste */
+            --background-color: #f5f5f5;
             --card-color: #ffffff;
-            --text-color: #333333;
-            --light-gray: #e9ecef;
-            --medium-gray: #6c757d;
-            --border-radius: 12px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --font-size-large: 1.5rem;
-            --font-size-medium: 1.125rem;
-            --font-size-normal: 1rem;
-            --font-size-small: 0.875rem;
-            --line-height: 1.5;
+            --text-color: #222222; /* Texto más oscuro para mejor contraste */
+            --light-gray: #e0e0e0;
+            --medium-gray: #666666;
+            --border-radius: 8px; /* Bordes menos redondeados para mejor reconocimiento */
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --font-size-large: 2rem; /* Fuentes más grandes */
+            --font-size-medium: 1.5rem;
+            --font-size-normal: 1.25rem;
+            --font-size-small: 1rem;
+            --line-height: 1.6; /* Mayor interlineado */
         }
 
         /* Reset y estilos base */
@@ -32,7 +32,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, Helvetica, sans-serif; /* Fuente más legible */
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: var(--line-height);
@@ -53,25 +53,71 @@
         .header {
             background-color: var(--primary-color);
             color: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: var(--border-radius);
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             box-shadow: var(--box-shadow);
         }
 
         .header h1 {
             font-size: var(--font-size-large);
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            font-weight: 700; /* Texto más grueso */
         }
 
         .welcome-message {
             font-size: var(--font-size-medium);
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
-        /* NUEVO: Sistema de pestañas */
+        /* NUEVO: Controles de accesibilidad - MEJORADO para móviles */
+        .accessibility-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            justify-content: center;
+        }
+
+        .accessibility-btn {
+            background: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            color: white;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-small);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .accessibility-btn:hover {
+            background-color: #004494;
+            transform: translateY(-2px);
+        }
+
+        .accessibility-btn:active {
+            transform: scale(0.98);
+        }
+
+        .accessibility-btn:focus {
+            outline: 3px solid #ffbf47;
+            outline-offset: 2px;
+        }
+
+        /* Sistema de pestañas - MEJORADO para mayor claridad */
         .tabs-container {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .tabs {
@@ -85,7 +131,7 @@
         .tab {
             flex: 1;
             text-align: center;
-            padding: 15px 20px;
+            padding: 20px;
             background-color: var(--light-gray);
             border: none;
             font-size: var(--font-size-medium);
@@ -93,40 +139,46 @@
             color: var(--medium-gray);
             cursor: pointer;
             transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
+            border-bottom: 4px solid transparent; /* Borde más grueso */
+            min-height: 70px; /* Área de toque más grande */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .tab:hover {
-            background-color: #e0e0e0;
+            background-color: #d0d0d0;
         }
 
         .tab.active {
             background-color: var(--card-color);
             color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
+            border-bottom: 4px solid var(--primary-color);
+            font-weight: 700;
         }
 
         /* Contenido principal */
         .main-content {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 30px;
         }
 
         /* Sección de misiones */
         .misiones-section {
             background-color: var(--card-color);
             border-radius: var(--border-radius);
-            padding: 25px;
+            padding: 30px;
             box-shadow: var(--box-shadow);
         }
 
         .section-title {
             color: var(--primary-color);
             font-size: var(--font-size-medium);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light-gray);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--light-gray); /* Borde más grueso */
+            font-weight: 700;
         }
 
         /* Lista de misiones */
@@ -137,46 +189,47 @@
         .mision-item {
             background-color: var(--light-gray);
             border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 5px solid var(--secondary-color);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 8px solid var(--secondary-color); /* Indicador visual más prominente */
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .mision-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .mision-titulo {
             font-size: var(--font-size-medium);
             color: var(--primary-color);
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
         .mision-descripcion {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: var(--text-color);
         }
 
         .mision-detalles {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 20px;
+            margin-top: 20px;
             align-items: center;
             justify-content: space-between;
         }
 
         .mision-nivel {
             background-color: white;
-            padding: 8px 12px;
+            padding: 10px 15px;
             border-radius: 20px;
             font-size: var(--font-size-small);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color); /* Borde más grueso */
+            font-weight: 600;
         }
 
         /* Estados de carga y error */
@@ -184,21 +237,22 @@
         .error,
         .empty {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             font-size: var(--font-size-medium);
             color: var(--medium-gray);
         }
 
         .error {
-            color: #dc3545;
+            color: #b00020; /* Rojo más oscuro para mejor contraste */
+            font-weight: 600;
         }
 
-        /* Botones y controles */
+        /* Botones y controles - MEJORADOS para mayor accesibilidad */
         .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border-radius: var(--border-radius);
             font-size: var(--font-size-normal);
             cursor: pointer;
@@ -206,19 +260,27 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            min-height: 60px; /* Área de toque más grande */
+            font-weight: 600;
+            border: 2px solid transparent; /* Para mejor visibilidad en enfoque */
         }
 
         .btn:hover {
-            background-color: #1d5a9b;
+            background-color: #004494;
         }
 
         .btn:active {
             transform: scale(0.98);
         }
 
+        .btn:focus {
+            outline: 3px solid #ffbf47; /* Color de contorno de alto contraste */
+            outline-offset: 2px;
+        }
+
         .btn-refresh {
-            margin-top: 15px;
+            margin-top: 20px;
             align-self: flex-start;
         }
 
@@ -227,16 +289,16 @@
         }
 
         .btn-iniciar:hover {
-            background-color: #3d8c4d;
+            background-color: #276329;
         }
 
-        /* NUEVO: Estilo para el botón "Volver a intentar" */
+        /* Estilo para el botón "Volver a intentar" */
         .btn-reintentar {
-            background-color: #f0ad4e; /* Color naranja */
+            background-color: #e67e22; /* Color naranja más oscuro */
         }
 
         .btn-reintentar:hover {
-            background-color: #ec971f; /* Naranja más oscuro al hacer hover */
+            background-color: #d35400; /* Naranja más oscuro al hacer hover */
         }
 
         .btn-volver {
@@ -244,34 +306,34 @@
         }
 
         .btn-volver:hover {
-            background-color: #5a6268;
+            background-color: #555555;
         }
 
         .btn-terminar {
-            background-color: #dc3545;
+            background-color: #b00020; /* Rojo más oscuro */
         }
 
         .btn-terminar:hover {
-            background-color: #c82333;
+            background-color: #900018;
         }
 
-        /* NUEVO: Botón de Text-to-Speech */
+        /* Botón de Text-to-Speech */
         .btn-tts {
-            background-color: #6f42c1; /* Color morado */
+            background-color: #5e35b1; /* Color morado más oscuro */
         }
 
         .btn-tts:hover {
-            background-color: #5a359d;
+            background-color: #4a2c8c;
         }
 
         .btn-tts.playing {
-            background-color: #e83e8c; /* Color rosa cuando está reproduciendo */
+            background-color: #c2185b; /* Color rosa oscuro cuando está reproduciendo */
         }
 
         .btn-container {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px;
+            margin-top: 25px;
         }
 
         /* Página de detalles de misión */
@@ -279,7 +341,7 @@
             display: none;
             background-color: var(--card-color);
             border-radius: var(--border-radius);
-            padding: 25px;
+            padding: 30px;
             box-shadow: var(--box-shadow);
         }
 
@@ -287,55 +349,58 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .mision-detalles-titulo {
             color: var(--primary-color);
             font-size: var(--font-size-large);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 700;
         }
 
         .mision-detalles-nivel {
             background-color: var(--primary-color);
             color: white;
-            padding: 8px 15px;
+            padding: 10px 18px;
             border-radius: 20px;
             font-size: var(--font-size-small);
+            font-weight: 600;
         }
 
         .mision-detalles-descripcion {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             font-size: var(--font-size-medium);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .pasos-section {
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
         .pasos-lista {
-            margin-top: 15px;
-            padding-left: 20px;
+            margin-top: 20px;
+            padding-left: 25px;
         }
 
         .pasos-lista li {
-            margin-bottom: 10px;
-            padding: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
             background-color: var(--light-gray);
             border-radius: var(--border-radius);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            font-size: var(--font-size-normal);
         }
 
-        /* NUEVO: Indicador de paso actual en reproducción */
+        /* Indicador de paso actual en reproducción */
         .paso-activo {
-            background-color: #d1ecf1 !important;
-            border-left: 4px solid #17a2b8;
+            background-color: #e1f5fe !important;
+            border-left: 6px solid #0288d1; /* Indicador más prominente */
         }
 
-        /* NUEVO: Estilo para las pestañas de contenido */
+        /* Estilo para las pestañas de contenido */
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -345,54 +410,59 @@
             display: block;
         }
 
-        /* NUEVO: Estilo para el tip de ayuda */
+        /* Estilo para el tip de ayuda */
         .tip-ayuda {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
+            background-color: #fff8e1;
+            border-left: 6px solid #ffa000; /* Borde más grueso */
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: var(--border-radius);
             font-style: italic;
         }
 
         .tip-ayuda h4 {
-            color: #856404;
-            margin-bottom: 8px;
+            color: #7d6608;
+            margin-bottom: 10px;
             font-size: var(--font-size-normal);
+            font-weight: 700;
         }
 
         .tip-ayuda p {
-            color: #856404;
+            color: #7d6608;
             margin: 0;
+            font-size: var(--font-size-normal);
         }
 
-        /* NUEVO: Controles de TTS */
+        /* Controles de TTS */
         .tts-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #f8f9fa;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
             border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
         }
 
         .tts-speed-control {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .tts-speed-control label {
-            font-size: var(--font-size-small);
+            font-size: var(--font-size-normal);
             color: var(--medium-gray);
+            font-weight: 600;
         }
 
         .tts-speed-control select {
-            padding: 5px 8px;
+            padding: 8px 12px;
             border-radius: 4px;
-            border: 1px solid var(--light-gray);
+            border: 2px solid var(--light-gray);
             background-color: white;
+            font-size: var(--font-size-normal);
         }
 
         @keyframes fadeIn {
@@ -402,20 +472,65 @@
 
         /* Footer */
         .footer {
-            margin-top: 40px;
+            margin-top: 50px;
             text-align: center;
             color: var(--medium-gray);
             font-size: var(--font-size-small);
-            padding: 20px;
+            padding: 25px;
+            border-top: 2px solid var(--light-gray);
         }
 
-        /* Responsive para móviles */
+        /* Modo de alto contraste */
+        .high-contrast {
+            --primary-color: #000000;
+            --secondary-color: #000000;
+            --background-color: #ffffff;
+            --card-color: #ffffff;
+            --text-color: #000000;
+            --light-gray: #f0f0f0;
+            --medium-gray: #000000;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .high-contrast .btn {
+            border: 2px solid #000000;
+        }
+
+        .high-contrast .accessibility-btn {
+            background: #000000;
+            border: 2px solid #000000;
+            color: #ffffff;
+        }
+
+        .high-contrast .accessibility-btn:hover {
+            background: #333333;
+        }
+
+        .high-contrast .tip-ayuda {
+            background-color: #ffff00;
+            border-left-color: #000000;
+        }
+
+        .high-contrast .tip-ayuda h4,
+        .high-contrast .tip-ayuda p {
+            color: #000000;
+        }
+
+        /* Texto más grande */
+        .larger-text {
+            --font-size-large: 2.5rem;
+            --font-size-medium: 1.75rem;
+            --font-size-normal: 1.5rem;
+            --font-size-small: 1.25rem;
+        }
+
+        /* Responsive para móviles - MEJORADO */
         @media (max-width: 768px) {
             :root {
-                --font-size-large: 1.25rem;
-                --font-size-medium: 1rem;
-                --font-size-normal: 0.9375rem;
-                --font-size-small: 0.8125rem;
+                --font-size-large: 1.75rem;
+                --font-size-medium: 1.5rem;
+                --font-size-normal: 1.25rem;
+                --font-size-small: 1rem;
             }
 
             .container {
@@ -423,27 +538,40 @@
             }
 
             .header {
-                padding: 15px;
-                margin-bottom: 20px;
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+
+            /* NUEVO: Controles de accesibilidad para móviles */
+            .accessibility-controls {
+                flex-direction: column;
+                gap: 12px;
+                padding: 20px;
+            }
+
+            .accessibility-btn {
+                min-width: 100%;
+                padding: 16px 20px;
+                font-size: var(--font-size-normal);
             }
 
             .misiones-section {
-                padding: 20px 15px;
+                padding: 25px 15px;
             }
 
             .mision-item {
-                padding: 15px;
+                padding: 20px;
             }
 
             .mision-detalles {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
                 align-items: flex-start;
             }
 
             .btn {
                 width: 100%;
-                padding: 15px;
+                padding: 18px;
             }
 
             .btn-container {
@@ -452,7 +580,7 @@
 
             .mision-detalles-header {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
             }
 
             .tabs {
@@ -460,7 +588,7 @@
             }
 
             .tab {
-                padding: 12px 15px;
+                padding: 15px 20px;
             }
 
             .tts-controls {
@@ -475,11 +603,17 @@
             }
 
             .header {
-                padding: 15px 10px;
+                padding: 20px 10px;
             }
 
             .misiones-section {
-                padding: 15px 10px;
+                padding: 20px 10px;
+            }
+
+            /* NUEVO: Ajustes adicionales para pantallas muy pequeñas */
+            .accessibility-btn {
+                padding: 18px 15px;
+                font-size: var(--font-size-small);
             }
         }
 
@@ -498,13 +632,14 @@
 
         /* Enfoque para navegación con teclado */
         button:focus,
-        a:focus {
-            outline: 3px solid #005fcc;
+        a:focus,
+        select:focus {
+            outline: 3px solid #ffbf47;
             outline-offset: 2px;
         }
 
         /* Mejora de contraste para texto */
-        .high-contrast {
+        .high-contrast-text {
             color: #000000;
             background-color: #ffffff;
         }
@@ -513,27 +648,40 @@
 
 <body>
     <div class="container">
+        <!-- NUEVO: Controles de accesibilidad - MEJORADO para móviles -->
+        <div class="accessibility-controls">
+            <button id="highContrastBtn" class="accessibility-btn" aria-label="Activar modo de alto contraste">
+                <span>🎨</span> Alto Contraste
+            </button>
+            <button id="largerTextBtn" class="accessibility-btn" aria-label="Aumentar tamaño del texto">
+                <span>🔍</span> Texto Grande
+            </button>
+            <button id="resetAccessibilityBtn" class="accessibility-btn" aria-label="Restablecer ajustes de accesibilidad">
+                <span>↺</span> Restablecer
+            </button>
+        </div>
+
         <header class="header">
             <h1>Mi Panel de Actividades</h1>
             <p class="welcome-message">Bienvenido, <span id="nombreUsuario">Usuario</span></p>
         </header>
 
-        <!-- NUEVO: Sistema de pestañas -->
+        <!-- Sistema de pestañas -->
         <div class="tabs-container">
             <div class="tabs">
-                <button id="tabMisiones" class="tab active" data-tab="misiones">Mis Actividades</button>
-                <button id="tabLogros" class="tab" data-tab="logros">Mis Logros</button>
+                <button id="tabMisiones" class="tab active" data-tab="misiones" aria-selected="true" role="tab">Mis Actividades</button>
+                <button id="tabLogros" class="tab" data-tab="logros" aria-selected="false" role="tab">Mis Logros</button>
             </div>
         </div>
 
         <main class="main-content">
             <!-- Pestaña de misiones -->
-            <div id="tabMisionesContent" class="tab-content active">
+            <div id="tabMisionesContent" class="tab-content active" role="tabpanel" aria-labelledby="tabMisiones">
                 <!-- Sección principal de misiones -->
                 <section id="misionesSection" class="misiones-section" aria-labelledby="misiones-title">
                     <h2 id="misiones-title" class="section-title">Mis Actividades</h2>
                     
-                    <!-- NUEVO: Tip de ayuda general -->
+                    <!-- Tip de ayuda general -->
                     <div id="tipGeneral" class="tip-ayuda">
                         <h4>💡 Consejo del día</h4>
                         <p id="tipGeneralText">Cada toque en la pantalla es un paso más para comunicarte mejor...</p>
@@ -558,20 +706,20 @@
                         <div class="mision-detalles-nivel">Nivel: Principiante</div>
                     </div>
 
-                    <!-- NUEVO: Tip específico para la misión -->
+                    <!-- Tip específico para la misión -->
                     <div id="tipMision" class="tip-ayuda">
                         <h4>💡 Tip de apoyo</h4>
                         <p id="tipMisionText">Si algo sale mal, no te preocupes. Puedes volver atrás y reintentar las veces que quieras.</p>
                     </div>
 
-                    <!-- NUEVO: Controles de Text-to-Speech -->
+                    <!-- Controles de Text-to-Speech -->
                     <div class="tts-controls">
-                        <button id="ttsBtn" class="btn btn-tts">
+                        <button id="ttsBtn" class="btn btn-tts" aria-label="Escuchar los pasos de la misión">
                             <span class="btn-icon">🔊</span> Escuchar Pasos
                         </button>
                         <div class="tts-speed-control">
                             <label for="ttsSpeed">Velocidad:</label>
-                            <select id="ttsSpeed">
+                            <select id="ttsSpeed" aria-label="Seleccionar velocidad de reproducción">
                                 <option value="0.5">Lenta</option>
                                 <option value="0.8" selected>Normal</option>
                                 <option value="1.2">Rápida</option>
@@ -588,10 +736,10 @@
                     </div>
 
                     <div class="btn-container">
-                        <button id="volverBtn" class="btn btn-volver">
+                        <button id="volverBtn" class="btn btn-volver" aria-label="Volver a la lista de actividades">
                             <span class="btn-icon">←</span> Volver
                         </button>
-                        <button id="terminarBtn" class="btn btn-terminar">
+                        <button id="terminarBtn" class="btn btn-terminar" aria-label="Marcar misión como completada">
                             <span class="btn-icon">✓</span> Terminar Misión
                         </button>
                     </div>
@@ -599,39 +747,39 @@
             </div>
 
             <!-- Pestaña de logros -->
-            <div id="tabLogrosContent" class="tab-content">
+            <div id="tabLogrosContent" class="tab-content" role="tabpanel" aria-labelledby="tabLogros">
                 <!-- Sección de logros -->
                 <section id="logrosSection" class="misiones-section" aria-labelledby="logros-title">
                     <h2 id="logros-title" class="section-title">Mis Logros</h2>
 
                     <div id="logrosContent">
-                        <div id="logroActualCard" class="mision-item" style="border-left-color: #f0ad4e;">
+                        <div id="logroActualCard" class="mision-item" style="border-left-color: #e67e22;">
                             <div class="mision-titulo">Logro actual: <span id="logroActualNombre">—</span></div>
                             <div class="mision-descripcion" id="logroActualDesc">—</div>
-                            <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos: <span
+                            <div style="margin-top:10px; font-size:var(--font-size-small); color:var(--medium-gray)">Puntos: <span
                                     id="puntosUsuario">0</span></div>
                         </div>
 
-                        <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #6f42c1;">
+                        <div id="siguienteLogroCard" class="mision-item" style="border-left-color: #5e35b1;">
                             <div class="mision-titulo">Siguiente meta: <span id="siguienteLogroNombre">—</span></div>
                             <div class="mision-descripcion" id="siguienteLogroDesc">—</div>
-                            <div style="margin-top:10px; font-size:0.95rem; color:var(--medium-gray)">Puntos requeridos:
+                            <div style="margin-top:10px; font-size:var(--font-size-small); color:var(--medium-gray)">Puntos requeridos:
                                 <span id="siguientePuntos">—</span>
                             </div>
-                            <div style="margin-top:8px;">
+                            <div style="margin-top:12px;">
                                 <progress id="logroProgress" value="0" max="100"
-                                    style="width:100%; height:14px;"></progress>
+                                    style="width:100%; height:20px;" aria-label="Progreso hacia el siguiente logro"></progress>
                             </div>
                         </div>
 
-                        <div style="margin-top:15px;">
-                            <h3 class="section-title" style="margin-bottom:10px">Logros desbloqueados</h3>
+                        <div style="margin-top:20px;">
+                            <h3 class="section-title" style="margin-bottom:15px">Logros desbloqueados</h3>
                             <ul id="logrosDesbloqueadosList" class="misiones-list">
                                 <li class="empty">Cargando logros...</li>
                             </ul>
                         </div>
 
-                        <div style="margin-top:12px;">
+                        <div style="margin-top:15px;">
                             <button id="refreshLogrosBtn" class="btn btn-refresh">↻ Actualizar logros</button>
                         </div>
                     </div>
@@ -656,7 +804,7 @@
             return v ? decodeURIComponent(v.pop()) : null;
         }
 
-        // NUEVO: Tips hardcodeados para las misiones
+        // Tips hardcodeados para las misiones
         const tipsGenerales = [
             "Cada toque en la pantalla es un paso más para comunicarte mejor...",
             "Recuerda que puedes pedir ayuda en cualquier momento.",
@@ -678,19 +826,52 @@
         let misionesActuales = [];
         let misionActualId = null;
         
-        // NUEVO: Variables para Text-to-Speech
+        // Variables para Text-to-Speech
         let ttsActivo = false;
         let ttsUtterance = null;
         let pasoActual = 0;
         let pasosTexto = [];
 
-        // NUEVO: Función para obtener un tip aleatorio
+        // NUEVO: Funciones para controles de accesibilidad
+        function toggleHighContrast() {
+            document.body.classList.toggle('high-contrast');
+            // Guardar preferencia
+            localStorage.setItem('highContrast', document.body.classList.contains('high-contrast'));
+            
+            // Actualizar texto del botón
+            const btn = document.getElementById('highContrastBtn');
+            const isActive = document.body.classList.contains('high-contrast');
+            btn.innerHTML = isActive ? '<span>🎨</span> Contraste Normal' : '<span>🎨</span> Alto Contraste';
+        }
+
+        function toggleLargerText() {
+            document.body.classList.toggle('larger-text');
+            // Guardar preferencia
+            localStorage.setItem('largerText', document.body.classList.contains('larger-text'));
+            
+            // Actualizar texto del botón
+            const btn = document.getElementById('largerTextBtn');
+            const isActive = document.body.classList.contains('larger-text');
+            btn.innerHTML = isActive ? '<span>🔍</span> Texto Normal' : '<span>🔍</span> Texto Grande';
+        }
+
+        function resetAccessibility() {
+            document.body.classList.remove('high-contrast', 'larger-text');
+            localStorage.removeItem('highContrast');
+            localStorage.removeItem('largerText');
+            
+            // Restaurar textos de botones
+            document.getElementById('highContrastBtn').innerHTML = '<span>🎨</span> Alto Contraste';
+            document.getElementById('largerTextBtn').innerHTML = '<span>🔍</span> Texto Grande';
+        }
+
+        // Función para obtener un tip aleatorio
         function obtenerTipAleatorio(tipsArray) {
             const indice = Math.floor(Math.random() * tipsArray.length);
             return tipsArray[indice];
         }
 
-        // NUEVO: Función para obtener tip específico para una misión
+        // Función para obtener tip específico para una misión
         function obtenerTipParaMision(tituloMision) {
             // Buscar palabras clave en el título para determinar el tip
             const titulo = tituloMision.toLowerCase();
@@ -713,7 +894,7 @@
             }
         }
 
-        // NUEVO: Función para actualizar el tip general
+        // Función para actualizar el tip general
         function actualizarTipGeneral() {
             const tipElement = document.getElementById('tipGeneralText');
             if (tipElement) {
@@ -721,7 +902,7 @@
             }
         }
 
-        // NUEVO: Función para actualizar el tip específico de misión
+        // Función para actualizar el tip específico de misión
         function actualizarTipMision(tituloMision) {
             const tipElement = document.getElementById('tipMisionText');
             if (tipElement) {
@@ -729,7 +910,7 @@
             }
         }
 
-        // NUEVO: Funciones para Text-to-Speech
+        // Funciones para Text-to-Speech
         function inicializarTTS() {
             // Verificar si el navegador soporta la API de SpeechSynthesis
             if (!('speechSynthesis' in window)) {
@@ -824,21 +1005,28 @@
             });
         }
 
-        // NUEVO: Función para cambiar entre pestañas
+        // Función para cambiar entre pestañas
         function cambiarPestaña(pestañaId) {
             // Ocultar todas las pestañas
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
+                tab.setAttribute('aria-hidden', 'true');
             });
             
             // Desactivar todos los botones de pestaña
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
             });
             
             // Activar la pestaña seleccionada
-            document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}Content`).classList.add('active');
-            document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}`).classList.add('active');
+            const tabContent = document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}Content`);
+            const tabButton = document.getElementById(`tab${pestañaId.charAt(0).toUpperCase() + pestañaId.slice(1)}`);
+            
+            tabContent.classList.add('active');
+            tabContent.setAttribute('aria-hidden', 'false');
+            tabButton.classList.add('active');
+            tabButton.setAttribute('aria-selected', 'true');
             
             // Si estamos en la pestaña de logros, actualizamos los datos
             if (pestañaId === 'logros') {
@@ -875,7 +1063,7 @@
                         <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
                         <div class="mision-detalles">
                             <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
-                            <button class="btn ${btnClase}" data-mision-id="${m._id}">
+                            <button class="btn ${btnClase}" data-mision-id="${m._id}" aria-label="${btnTexto}: ${escapeHtml(m.titulo)}">
                                 <span class="btn-icon">${btnIcono}</span> ${btnTexto}
                             </button>
                         </div>
@@ -913,7 +1101,7 @@
                 document.querySelector('.mision-detalles-descripcion').textContent = mision.descripcion;
                 document.querySelector('.mision-detalles-nivel').textContent = `Nivel: ${mision.nivel}`;
 
-                // NUEVO: Actualizar el tip específico para esta misión
+                // Actualizar el tip específico para esta misión
                 actualizarTipMision(mision.titulo);
 
                 const pasosList = document.getElementById('pasosList');
@@ -922,7 +1110,7 @@
                         `<li><span>${index + 1}.</span> ${escapeHtml(paso)}</li>`
                     ).join('');
                     
-                    // NUEVO: Preparar los pasos para TTS
+                    // Preparar los pasos para TTS
                     prepararPasosParaTTS(mision.pasos);
                 } else {
                     pasosList.innerHTML = '<li>No hay pasos específicos para esta misión.</li>';
@@ -938,7 +1126,7 @@
 
         // Volver a lista
         function volverAListaMisiones() {
-            // NUEVO: Detener TTS si está activo
+            // Detener TTS si está activo
             if (ttsActivo) {
                 window.speechSynthesis.cancel();
                 ttsActivo = false;
@@ -983,7 +1171,7 @@
             }
         }
 
-        // NUEVAS FUNCIONES: Logros
+        // FUNCIONES: Logros
         async function loadLogros() {
             try {
                 document.getElementById('logrosDesbloqueadosList').innerHTML = '<li class="loading">Cargando logros...</li>';
@@ -1048,25 +1236,40 @@
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function () {
-            // NUEVO: Inicializar TTS
+            // Inicializar TTS
             inicializarTTS();
             
-            // NUEVO: Inicializar tips
+            // Inicializar tips
             actualizarTipGeneral();
+            
+            // Cargar preferencias de accesibilidad guardadas
+            if (localStorage.getItem('highContrast') === 'true') {
+                document.body.classList.add('high-contrast');
+                document.getElementById('highContrastBtn').innerHTML = '<span>🎨</span> Contraste Normal';
+            }
+            if (localStorage.getItem('largerText') === 'true') {
+                document.body.classList.add('larger-text');
+                document.getElementById('largerTextBtn').innerHTML = '<span>🔍</span> Texto Normal';
+            }
             
             loadMisiones();
             loadLogros();
 
-            // NUEVO: Event listeners para las pestañas
+            // Event listeners para las pestañas
             document.getElementById('tabMisiones').addEventListener('click', () => cambiarPestaña('misiones'));
             document.getElementById('tabLogros').addEventListener('click', () => cambiarPestaña('logros'));
+
+            // Event listeners para controles de accesibilidad
+            document.getElementById('highContrastBtn').addEventListener('click', toggleHighContrast);
+            document.getElementById('largerTextBtn').addEventListener('click', toggleLargerText);
+            document.getElementById('resetAccessibilityBtn').addEventListener('click', resetAccessibility);
 
             document.getElementById('refreshBtn').addEventListener('click', loadMisiones);
             document.getElementById('refreshLogrosBtn').addEventListener('click', loadLogros);
             document.getElementById('volverBtn').addEventListener('click', volverAListaMisiones);
             document.getElementById('terminarBtn').addEventListener('click', terminarMision);
             
-            // NUEVO: Event listener para el botón de TTS
+            // Event listener para el botón de TTS
             document.getElementById('ttsBtn').addEventListener('click', reproducirPasos);
 
             const nombreUsuario = getCookie('nombreUsuario');
