@@ -2,13 +2,15 @@ const express = require("express");
 const router = express.Router();
 const logroController = require("../controllers/logro.controller");
 
-// GET /logros/ -> lista todos los logros del sistema
-router.get("/", logroController.getAllLogros);
-
-// GET /logros/actual -> devuelve logro actual y siguiente logro
+// Rutas especiales primero
 router.get("/actual", logroController.getLogroActual);
-
-// GET /logros/desbloqueados -> devuelve logros desbloqueados por el usuario
 router.get("/desbloqueados", logroController.getLogrosUsuario);
+
+// Rutas CRUD por ID (al final)
+router.get("/", logroController.getAllLogros); 
+router.get("/:id", logroController.getLogroById);
+router.post("/", logroController.createLogro);
+router.put("/:id", logroController.updateLogro);
+router.delete("/:id", logroController.deleteLogro);
 
 module.exports = router;

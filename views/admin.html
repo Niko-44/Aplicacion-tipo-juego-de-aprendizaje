@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración - Misiones y Logros</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 10px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    input, textarea, select { width: 100%; padding: 5px; margin-bottom: 10px; }
+    button { padding: 5px 10px; margin-right: 5px; }
+    .form-container { margin-bottom: 30px; }
+    h1, h2 { margin-top: 30px; }
+    #adminPanel { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- FORMULARIO DE LOGIN -->
+  <div id="loginForm" class="form-container">
+    <h1>Iniciar Sesión</h1>
+    <label>Usuario:</label>
+    <input type="text" id="username">
+    <label>Contraseña:</label>
+    <input type="password" id="password">
+    <button onclick="login()">Ingresar</button>
+    <p id="loginError" style="color:red;"></p>
+  </div>
+
+  <!-- PANEL DE ADMINISTRACIÓN -->
+  <div id="adminPanel">
+
+    <!-- CAMBIO DE USUARIO / CONTRASEÑA -->
+    <div class="form-container">
+      <h2>Configuración de Cuenta</h2>
+      <label>Nuevo Usuario:</label>
+      <input type="text" id="newUser">
+      <label>Nueva Contraseña:</label>
+      <input type="password" id="newPass">
+      <button onclick="cambiarCredenciales()">Guardar Cambios</button>
+      <p id="configMsg" style="color:green;"></p>
+    </div>
+
+    <h1>Administración de Misiones</h1>
+    <div class="form-container">
+      <h2 id="form-title">Agregar Nueva Misión</h2>
+      <input type="hidden" id="misionId">
+      <label>Título:</label>
+      <input type="text" id="titulo">
+      <label>Descripción:</label>
+      <textarea id="descripcion"></textarea>
+      <label>Pasos (separados por coma):</label>
+      <input type="text" id="pasos">
+      <label>Tipo:</label>
+      <input type="text" id="tipo">
+      <label>Nivel:</label>
+      <input type="text" id="nivel">
+      <button onclick="guardarMision()">Guardar</button>
+      <button onclick="resetFormMision()">Cancelar</button>
+    </div>
+
+    <h2>Misiones Existentes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Pasos</th>
+          <th>Tipo</th>
+          <th>Nivel</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="misionesTable"></tbody>
+    </table>
+
+    <hr>
+
+    <h1>Administración de Logros</h1>
+    <div class="form-container">
+      <h2 id="logro-form-title">Agregar Nuevo Logro</h2>
+      <input type="hidden" id="logroId">
+      <label>Nombre:</label>
+      <input type="text" id="logroNombre">
+      <label>Descripción:</label>
+      <textarea id="logroDescripcion"></textarea>
+      <label>Puntos requeridos:</label>
+      <input type="number" id="logroPuntos">
+      <button onclick="guardarLogro()">Guardar</button>
+      <button onclick="resetFormLogro()">Cancelar</button>
+    </div>
+
+    <h2>Logros Existentes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Puntos Requeridos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="logrosTable"></tbody>
+    </table>
+
+  </div>
+
+<script>
+const MISIONES_API = "/misiones";
+const LOGROS_API = "/logros";
+
+// CREDENCIALES (guardadas en localStorage para mantener cambios)
+let ADMIN_USER = localStorage.getItem("adminUser") || "admin";
+let ADMIN_PASS = localStorage.getItem("adminPass") || "1234";
+
+// ===========================
+// LOGIN
+// ===========================
+function login() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  const error = document.getElementById("loginError");
+
+  if(user === ADMIN_USER && pass === ADMIN_PASS) {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    cargarMisiones();
+    cargarLogros();
+  } else {
+    error.innerText = "Usuario o contraseña incorrectos.";
+  }
+}
+
+// ===========================
+// CAMBIAR USUARIO / CONTRASEÑA
+// ===========================
+function cambiarCredenciales() {
+  const newUser = document.getElementById("newUser").value.trim();
+  const newPass = document.getElementById("newPass").value.trim();
+  const msg = document.getElementById("configMsg");
+
+  if(newUser && newPass) {
+    ADMIN_USER = newUser;
+    ADMIN_PASS = newPass;
+    localStorage.setItem("adminUser", ADMIN_USER);
+    localStorage.setItem("adminPass", ADMIN_PASS);
+    msg.innerText = "Usuario y contraseña actualizados con éxito.";
+    document.getElementById("newUser").value = "";
+    document.getElementById("newPass").value = "";
+  } else {
+    msg.style.color = "red";
+    msg.innerText = "Ambos campos son obligatorios.";
+  }
+}
+
+// ===========================
+// FUNCIONES MISIÓN
+// ===========================
+async function cargarMisiones() {
+  try {
+    const res = await fetch(MISIONES_API);
+    const misiones = await res.json();
+    const tbody = document.getElementById("misionesTable");
+    tbody.innerHTML = "";
+
+    misiones.forEach(m => {
+      const pasosArray = Array.isArray(m.pasos) ? m.pasos : [];
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${m.titulo || ""}</td>
+        <td>${m.descripcion || ""}</td>
+        <td>${pasosArray.join(", ")}</td>
+        <td>${m.tipo || ""}</td>
+        <td>${m.nivel || ""}</td>
+        <td>
+          <button onclick='editarMision("${m._id}")'>Editar</button>
+          <button onclick='eliminarMision("${m._id}")'>Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) { console.error("Error al cargar misiones:", err); }
+}
+
+async function guardarMision() {
+  const id = document.getElementById("misionId").value;
+  const data = {
+    titulo: document.getElementById("titulo").value,
+    descripcion: document.getElementById("descripcion").value,
+    pasos: document.getElementById("pasos").value.split(",").map(p => p.trim()).filter(p => p),
+    tipo: document.getElementById("tipo").value,
+    nivel: document.getElementById("nivel").value
+  };
+  try {
+    if (id) {
+      await fetch(`${MISIONES_API}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    } else {
+      await fetch(MISIONES_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    }
+    resetFormMision();
+    cargarMisiones();
+  } catch (err) { console.error(err); }
+}
+
+async function editarMision(id) {
+  try {
+    const res = await fetch(`${MISIONES_API}/${id}`);
+    const m = await res.json();
+    document.getElementById("form-title").innerText = "Editar Misión";
+    document.getElementById("misionId").value = m._id;
+    document.getElementById("titulo").value = m.titulo || "";
+    document.getElementById("descripcion").value = m.descripcion || "";
+    document.getElementById("pasos").value = Array.isArray(m.pasos) ? m.pasos.join(", ") : "";
+    document.getElementById("tipo").value = m.tipo || "";
+    document.getElementById("nivel").value = m.nivel || "";
+  } catch (err) { console.error(err); }
+}
+
+async function eliminarMision(id) {
+  if (!confirm("¿Seguro que quieres eliminar esta misión?")) return;
+  try { await fetch(`${MISIONES_API}/${id}`, { method: "DELETE" }); cargarMisiones(); }
+  catch (err) { console.error(err); }
+}
+
+function resetFormMision() {
+  document.getElementById("form-title").innerText = "Agregar Nueva Misión";
+  document.getElementById("misionId").value = "";
+  document.getElementById("titulo").value = "";
+  document.getElementById("descripcion").value = "";
+  document.getElementById("pasos").value = "";
+  document.getElementById("tipo").value = "";
+  document.getElementById("nivel").value = "";
+}
+
+// ===========================
+// FUNCIONES LOGRO
+// ===========================
+async function cargarLogros() {
+  try {
+    const res = await fetch(LOGROS_API);
+    const logros = await res.json();
+    const tbody = document.getElementById("logrosTable");
+    tbody.innerHTML = "";
+
+    logros.forEach(l => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${l.nombre || ""}</td>
+        <td>${l.descripcion || ""}</td>
+        <td>${l.puntos_requeridos || 0}</td>
+        <td>
+          <button onclick='editarLogro("${l._id}")'>Editar</button>
+          <button onclick='eliminarLogro("${l._id}")'>Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) { console.error("Error al cargar logros:", err); }
+}
+
+async function guardarLogro() {
+  const id = document.getElementById("logroId").value;
+  const data = {
+    nombre: document.getElementById("logroNombre").value,
+    descripcion: document.getElementById("logroDescripcion").value,
+    puntos_requeridos: Number(document.getElementById("logroPuntos").value)
+  };
+  try {
+    if (id) {
+      await fetch(`${LOGROS_API}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    } else {
+      await fetch(LOGROS_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    }
+    resetFormLogro();
+    cargarLogros();
+  } catch (err) { console.error(err); }
+}
+
+async function editarLogro(id) {
+  try {
+    const res = await fetch(`${LOGROS_API}/${id}`);
+    const l = await res.json();
+    document.getElementById("logro-form-title").innerText = "Editar Logro";
+    document.getElementById("logroId").value = l._id;
+    document.getElementById("logroNombre").value = l.nombre || "";
+    document.getElementById("logroDescripcion").value = l.descripcion || "";
+    document.getElementById("logroPuntos").value = l.puntos_requeridos || 0;
+  } catch (err) { console.error(err); }
+}
+
+async function eliminarLogro(id) {
+  if (!confirm("¿Seguro que quieres eliminar este logro?")) return;
+  try { await fetch(`${LOGROS_API}/${id}`, { method: "DELETE" }); cargarLogros(); }
+  catch (err) { console.error(err); }
+}
+
+function resetFormLogro() {
+  document.getElementById("logro-form-title").innerText = "Agregar Nuevo Logro";
+  document.getElementById("logroId").value = "";
+  document.getElementById("logroNombre").value = "";
+  document.getElementById("logroDescripcion").value = "";
+  document.getElementById("logroPuntos").value = "";
+}
+</script>
+
+</body>
+</html>

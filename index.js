@@ -39,6 +39,10 @@ app.get("/inicio", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "inicio.html"));
 });
 
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "admin.html"));
+});
+
 // 404
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint no encontrado" });
