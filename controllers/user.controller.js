@@ -38,6 +38,8 @@ const ensureUser = async (req, res, next) => {
       // Guardar id de usuario en cookie
       res.cookie("userId", user._id.toString(), {
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Solo en HTTPS
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
       });
     }
