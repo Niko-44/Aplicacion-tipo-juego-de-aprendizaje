@@ -478,15 +478,13 @@
               <tr>
                 <th>Título</th>
                 <th>Descripción</th>
-                <th>Pasos</th>
-                <th>Tipo</th>
                 <th>Nivel</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="misionesTable">
               <tr>
-                <td colspan="6" style="text-align: center;">Cargando misiones...</td>
+                <td colspan="4" style="text-align: center;">Cargando misiones...</td>
               </tr>
             </tbody>
           </table>
@@ -658,7 +656,7 @@ function renderizarPasos() {
 async function cargarMisiones() {
   try {
     const tbody = document.getElementById("misionesTable");
-    tbody.innerHTML = "<tr><td colspan='6' style='text-align: center;'>Cargando misiones...</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='4' style='text-align: center;'>Cargando misiones...</td></tr>";
     
     const res = await fetch(MISIONES_API);
     const misiones = await res.json();
@@ -666,7 +664,7 @@ async function cargarMisiones() {
     tbody.innerHTML = "";
 
     if (misiones.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='6' style='text-align: center;'>No hay misiones registradas</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='4' style='text-align: center;'>No hay misiones registradas</td></tr>";
       return;
     }
 
@@ -723,12 +721,7 @@ async function cargarMisiones() {
       tr.innerHTML = `
         <td>${m.titulo || ""}</td>
         <td>${m.descripcion || ""}</td>
-        <td>
-          <ul style="margin: 0; padding-left: 20px;">
-            ${pasosArray.map(paso => `<li>${paso}</li>`).join('')}
-          </ul>
-        </td>
-        <td><span class="badge ${tipoClass}">${tipoTexto}</span></td>
+        
         <td><span class="badge ${nivelClass}">${nivelTexto}</span></td>
         <td>
           <button class='btn btn-small btn-warning' onclick='editarMision("${m._id}")'>Editar</button>
