@@ -866,7 +866,11 @@
                 list.innerHTML = '<li class="loading">Cargando actividades...</li>';
                 refreshBtn.disabled = true;
 
-                const res = await fetch('/misiones');
+                const res = await fetch('/misiones', {
+                    credentials: 'include'
+                });
+
+
                 if (!res.ok) throw new Error('Respuesta no ok');
 
                 misionesActuales = await res.json();
@@ -882,15 +886,15 @@
                     const btnClase = m.iniciada ? "btn-reintentar" : "btn-iniciar";
 
                     return `<li class="mision-item">
-                        <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
-                        <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
-                        <div class="mision-detalles">
-                            <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
-                            <button class="btn ${btnClase}" data-mision-id="${m._id}">
-                                <span class="btn-icon">${btnIcono}</span> ${btnTexto}
-                            </button>
-                        </div>
-                    </li>`;
+                    <div class="mision-titulo">${escapeHtml(m.titulo)}</div>
+                    <div class="mision-descripcion">${escapeHtml(m.descripcion)}</div>
+                    <div class="mision-detalles">
+                        <div class="mision-nivel">Nivel: ${escapeHtml(m.nivel)}</div>
+                        <button class="btn ${btnClase}" data-mision-id="${m._id}">
+                            <span class="btn-icon">${btnIcono}</span> ${btnTexto}
+                        </button>
+                    </div>
+                </li>`;
                 }).join('');
 
                 document.querySelectorAll('.btn-iniciar, .btn-reintentar').forEach(btn => {
@@ -915,7 +919,7 @@
                 document.getElementById('misionesSection').style.display = 'none';
                 document.getElementById('misionDetallesSection').style.display = 'block';
 
-                const res = await fetch(`/misiones/${misionId}`);
+                const res = await fetch(`/misiones/${misionId}`, { credentials: 'include' });
                 if (!res.ok) throw new Error('Error al cargar los detalles de la misión');
 
                 const mision = await res.json();
@@ -970,7 +974,8 @@
                 const response = await fetch("/misiones/terminar", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ misionId: misionActualId, puntos: 10 })
+                    body: JSON.stringify({ misionId: misionActualId, puntos: 10 }),
+                    credentials: 'include'
                 });
 
                 const data = await response.json();
@@ -1000,8 +1005,8 @@
                 document.getElementById('logrosDesbloqueadosList').innerHTML = '<li class="loading">Cargando logros...</li>';
 
                 const [actualRes, desbloqRes] = await Promise.all([
-                    fetch('/logros/actual'),
-                    fetch('/logros/desbloqueados')
+                    fetch('/logros/actual', { credentials: 'include' }),
+                    fetch('/logros/desbloqueados', { credentials: 'include' })
                 ]);
 
                 if (!actualRes.ok) throw new Error('Error al obtener logro actual');
@@ -1086,6 +1091,7 @@
             }
         });
     </script>
+
 </body>
 
 </html>

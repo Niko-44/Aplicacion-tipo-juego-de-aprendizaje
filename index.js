@@ -16,6 +16,14 @@ const logroRoutes = require("./routes/logro.routes"); // nueva ruta de logros
 const mongoURI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 
+const cors = require('cors');
+
+app.use(cors({
+  origin: true, // o poné la URL exacta de tu frontend si está en otro dominio
+  credentials: true
+}));
+
+
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conexión a MongoDB exitosa"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
