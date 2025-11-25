@@ -40,7 +40,7 @@ const createGuestUser = async (res) => {
 };
 
 // ============================
-// Almacenar o validar usuario mediante cookie
+// Crear o validar usuario mediante cookie
 // ============================
 
 const ensureUser = async (req, res, next) => {

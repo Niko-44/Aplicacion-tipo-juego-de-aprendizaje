@@ -36,7 +36,12 @@ let ttsUtterance = null;
 let pasoActual = 0;
 let pasosTexto = [];
 
+
+
+// ===========================+
 // Funciones para controles de accesibilidad
+// ============================
+
 function toggleHighContrast() {
     document.body.classList.toggle('high-contrast');
     localStorage.setItem('highContrast', document.body.classList.contains('high-contrast'));
@@ -65,6 +70,9 @@ function resetAccessibility() {
     document.getElementById('highContrastBtn').innerHTML = '<span>🎨</span> Alto Contraste';
     document.getElementById('largerTextBtn').innerHTML = '<span>🔍</span> Texto Grande';
 }
+
+
+
 
 // Función para manejar el dropdown de accesibilidad en móviles
 function setupAccessibilityDropdown() {
@@ -149,9 +157,16 @@ function actualizarTipMision(tituloMision) {
     }
 }
 
+
+
+
+
+// ===========================+
 // Funciones para Text-to-Speech
+// ============================
+
 function inicializarTTS() {
-    // Verificar si el navegador soporta la API de SpeechSynthesis
+    // Verificar si el navegador soporta SpeechSynthesis
     if (!('speechSynthesis' in window)) {
         alert('Tu navegador no soporta la función de texto a voz. Por favor, utiliza un navegador más moderno.');
         document.getElementById('ttsBtn').disabled = true;
@@ -205,6 +220,7 @@ function reproducirSiguientePaso() {
 
     // Resaltar el paso actual
     resetearResaltadoPasos();
+    
     const elementosPasos = document.querySelectorAll('#pasosList li');
     if (elementosPasos[pasoActual]) {
         elementosPasos[pasoActual].classList.add('paso-activo');
@@ -243,6 +259,11 @@ function prepararPasosParaTTS(pasos) {
         pasosTexto.push(`Paso ${index + 1}: ${paso}`);
     });
 }
+
+
+
+
+
 
 // Función para cambiar entre pestañas
 function cambiarPestaña(pestañaId) {
@@ -344,7 +365,7 @@ async function mostrarDetallesMision(misionId) {
                 `<li><span>${index + 1}.</span> ${escapeHtml(paso)}</li>`
             ).join('');
 
-            // NUEVO: Preparar los pasos para TTS
+            // Preparar los pasos para TTS
             prepararPasosParaTTS(mision.pasos);
         } else {
             pasosList.innerHTML = '<li>No hay pasos específicos para esta misión.</li>';
