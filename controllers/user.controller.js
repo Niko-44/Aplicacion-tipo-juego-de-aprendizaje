@@ -6,6 +6,43 @@ const { v4: uuidv4 } = require('uuid');
 const User = require("../models/user.model");
 const Mision = require("../models/mision.model");
 
+// ============================
+// Crear usuario invitado
+// ============================
+
+const createGuestUser = async (res) => {
+    const random = Math.random().toString(36).substring(2, 9);
+    const nombre = "Invitado";
+    const nombre_usuario = `user_${random}`;
+    const rawPassword = random;
+    const password = await bcrypt.hash(rawPassword, 10);
+    const email = `${nombre_usuario}@example.com`;
+    const uuid = uuidv4();
+
+    const user = new User({
+      nombre,
+      nombre_usuario,
+      password,
+      email,
+      uuid
+    });
+
+    await user.save();
+
+    res.cookie("userId", user._id.toString(), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    return user;
+};
+
+// ============================
+// Almacenar o validar usuario mediante cookie
+// ============================
+
 const ensureUser = async (req, res, next) => {
   try {
     let userId = req.cookies && req.cookies.userId;
@@ -16,37 +53,11 @@ const ensureUser = async (req, res, next) => {
     }
 
     if (!user) {
-      // Crear usuario automático "invitado"
-      const random = Math.random().toString(36).substring(2, 9);
-      const nombre = "Invitado";
-      const nombre_usuario = `user_${random}`;
-      const rawPassword = random; // contraseña temporal
-      const password = await bcrypt.hash(rawPassword, 10);
-      const email = `${nombre_usuario}@example.com`;
-      const uuid = uuidv4(); // Generar UUID único
-
-      user = new User({
-        nombre,
-        nombre_usuario,
-        password,
-        email,
-        uuid  // Agregar UUID
-      });
-
-      await user.save();
-
-      // Guardar id de usuario en cookie
-      res.cookie("userId", user._id.toString(), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Solo en HTTPS
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
-      });
+      user = await createGuestUser(res);
     }
 
     req.user = user;
 
-    // Si se solicita HTML, inyectar nombre de usuario en inicio.html y devolver
     const file = path.join(__dirname, "..", "views", "inicio.html");
     if (fs.existsSync(file)) {
       let html = fs.readFileSync(file, "utf8");
@@ -61,24 +72,33 @@ const ensureUser = async (req, res, next) => {
   }
 };
 
+// ============================
 // Obtener misiones del usuario
+// ============================
+
 const getUserMissions = async (req, res) => {
   try {
-    const userId = req.cookies.userId;
-    if (!userId) return res.status(401).json({ message: "Usuario no autenticado" });
+    let userId = req.cookies.userId;
+    let user = null;
 
-    const user = await User.findById(userId).exec();
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (userId) {
+      user = await User.findById(userId).exec();
+    }
+
+    // Si no hay cookie o no se encuentra usuario, crear uno nuevo
+    if (!user) {
+      user = await createGuestUser(res);
+    }
 
     const todasMisiones = await Mision.find().exec();
 
-    // Verificar si la misión está en misiones_completadas
+    // Verificar si la misión está completada 
     const misionesConEstado = todasMisiones.map(m => ({
       _id: m._id,
       titulo: m.titulo,
       descripcion: m.descripcion,
       nivel: m.nivel,
-      iniciada: user.progreso.misiones_completadas.some(mc => mc.equals(m._id))
+      iniciada: (user.progreso && user.progreso.misiones_completadas || []).some(mc => mc.equals(m._id))
     }));
 
     res.json(misionesConEstado);

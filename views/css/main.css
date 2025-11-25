@@ -1,0 +1,741 @@
+/* Variables CSS para consistencia - AUMENTADAS para mejor legibilidad */
+:root {
+    --primary-color: #0056b3;
+    /* Azul más oscuro para mejor contraste */
+    --secondary-color: #2e7d32;
+    /* Verde más oscuro para mejor contraste */
+    --background-color: #f5f5f5;
+    --card-color: #ffffff;
+    --text-color: #222222;
+    /* Texto más oscuro para mejor contraste */
+    --light-gray: #e0e0e0;
+    --medium-gray: #666666;
+    --border-radius: 8px;
+    /* Bordes menos redondeados para mejor reconocimiento */
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --font-size-large: 2rem;
+    /* Fuentes más grandes */
+    --font-size-medium: 1.5rem;
+    --font-size-normal: 1.25rem;
+    --font-size-small: 1rem;
+    --line-height: 1.6;
+    /* Mayor interlineado */
+}
+
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    /* Fuente más legible */
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: var(--line-height);
+    font-size: var(--font-size-normal);
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Cabecera */
+.header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 25px;
+    border-radius: var(--border-radius);
+    margin-bottom: 30px;
+    box-shadow: var(--box-shadow);
+}
+
+.header h1 {
+    font-size: var(--font-size-large);
+    margin-bottom: 10px;
+    font-weight: 700;
+    /* Texto más grueso */
+}
+
+.welcome-message {
+    font-size: var(--font-size-medium);
+    opacity: 0.95;
+}
+
+/* NUEVO: Controles de accesibilidad - MEJORADO para móviles con dropdown */
+.accessibility-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--card-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    justify-content: center;
+    position: relative;
+}
+
+.accessibility-btn {
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    color: white;
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 140px;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.accessibility-btn:hover {
+    background-color: #004494;
+    transform: translateY(-2px);
+}
+
+.accessibility-btn:active {
+    transform: scale(0.98);
+}
+
+.accessibility-btn:focus {
+    outline: 3px solid #ffbf47;
+    outline-offset: 2px;
+}
+
+/* Sistema de pestañas - MEJORADO para mayor claridad */
+.tabs-container {
+    margin-bottom: 30px;
+}
+
+.tabs {
+    display: flex;
+    background-color: var(--card-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    background-color: var(--light-gray);
+    border: none;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+    color: var(--medium-gray);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 4px solid transparent;
+    /* Borde más grueso */
+    min-height: 70px;
+    /* Área de toque más grande */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab:hover {
+    background-color: #d0d0d0;
+}
+
+.tab.active {
+    background-color: var(--card-color);
+    color: var(--primary-color);
+    border-bottom: 4px solid var(--primary-color);
+    font-weight: 700;
+}
+
+/* Contenido principal */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Sección de misiones */
+.misiones-section {
+    background-color: var(--card-color);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-size: var(--font-size-medium);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--light-gray);
+    /* Borde más grueso */
+    font-weight: 700;
+}
+
+/* Lista de misiones */
+.misiones-list {
+    list-style: none;
+}
+
+.mision-item {
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 8px solid var(--secondary-color);
+    /* Indicador visual más prominente */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mision-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mision-titulo {
+    font-size: var(--font-size-medium);
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.mision-descripcion {
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.mision-detalles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mision-nivel {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: var(--font-size-small);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    /* Borde más grueso */
+    font-weight: 600;
+}
+
+/* Estados de carga y error */
+.loading,
+.error,
+.empty {
+    text-align: center;
+    padding: 40px;
+    font-size: var(--font-size-medium);
+    color: var(--medium-gray);
+}
+
+.error {
+    color: #b00020;
+    /* Rojo más oscuro para mejor contraste */
+    font-weight: 600;
+}
+
+/* Botones y controles - MEJORADOS para mayor accesibilidad */
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-normal);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 60px;
+    /* Área de toque más grande */
+    font-weight: 600;
+    border: 2px solid transparent;
+    /* Para mejor visibilidad en enfoque */
+}
+
+.btn:hover {
+    background-color: #004494;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn:focus {
+    outline: 3px solid #ffbf47;
+    /* Color de contorno de alto contraste */
+    outline-offset: 2px;
+}
+
+.btn-refresh {
+    margin-top: 20px;
+    align-self: flex-start;
+}
+
+.btn-iniciar {
+    background-color: var(--secondary-color);
+}
+
+.btn-iniciar:hover {
+    background-color: #276329;
+}
+
+/* Estilo para el botón "Volver a intentar" */
+.btn-reintentar {
+    background-color: #f0ad4e;
+    /* Color naranja */
+}
+
+.btn-reintentar:hover {
+    background-color: #ec971f;
+    /* Naranja más oscuro al hacer hover */
+}
+
+.btn-volver {
+    background-color: var(--medium-gray);
+}
+
+.btn-volver:hover {
+    background-color: #555555;
+}
+
+.btn-terminar {
+    background-color: #b00020;
+    /* Rojo más oscuro */
+}
+
+.btn-terminar:hover {
+    background-color: #900018;
+}
+
+/* Botón de Text-to-Speech */
+.btn-tts {
+    background-color: #6f42c1;
+    /* Color morado */
+}
+
+.btn-tts:hover {
+    background-color: #4a2c8c;
+}
+
+.btn-tts.playing {
+    background-color: #e83e8c;
+    /* Color rosa cuando está reproduciendo */
+}
+
+.btn-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+/* Página de detalles de misión */
+.mision-detalles-page {
+    display: none;
+    background-color: var(--card-color);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+}
+
+.mision-detalles-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.mision-detalles-titulo {
+    color: var(--primary-color);
+    font-size: var(--font-size-large);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.mision-detalles-nivel {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: var(--font-size-small);
+    font-weight: 600;
+}
+
+.mision-detalles-descripcion {
+    margin-bottom: 30px;
+    font-size: var(--font-size-medium);
+    line-height: 1.7;
+}
+
+.pasos-section {
+    margin-top: 30px;
+}
+
+.pasos-lista {
+    margin-top: 20px;
+    padding-left: 25px;
+}
+
+.pasos-lista li {
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: var(--font-size-normal);
+}
+
+/* Indicador de paso actual en reproducción */
+.paso-activo {
+    background-color: #e1f5fe !important;
+    border-left: 6px solid #0288d1;
+    /* Indicador más prominente */
+}
+
+/* Estilo para las pestañas de contenido */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Estilo para el tip de ayuda */
+.tip-ayuda {
+    background-color: #fff8e1;
+    border-left: 6px solid #ffa000;
+    /* Borde más grueso */
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: var(--border-radius);
+    font-style: italic;
+}
+
+.tip-ayuda h4 {
+    color: #7d6608;
+    margin-bottom: 10px;
+    font-size: var(--font-size-normal);
+    font-weight: 700;
+}
+
+.tip-ayuda p {
+    color: #7d6608;
+    margin: 0;
+    font-size: var(--font-size-normal);
+}
+
+/* Controles de TTS */
+.tts-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: var(--border-radius);
+    border: 2px solid var(--light-gray);
+}
+
+.tts-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tts-speed-control label {
+    font-size: var(--font-size-normal);
+    color: var(--medium-gray);
+    font-weight: 600;
+}
+
+.tts-speed-control select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 2px solid var(--light-gray);
+    background-color: white;
+    font-size: var(--font-size-normal);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Footer */
+.footer {
+    margin-top: 50px;
+    text-align: center;
+    color: var(--medium-gray);
+    font-size: var(--font-size-small);
+    padding: 25px;
+    border-top: 2px solid var(--light-gray);
+}
+
+/* Modo de alto contraste */
+.high-contrast {
+    --primary-color: #000000;
+    --secondary-color: #000000;
+    --background-color: #ffffff;
+    --card-color: #ffffff;
+    --text-color: #000000;
+    --light-gray: #f0f0f0;
+    --medium-gray: #000000;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.high-contrast .btn {
+    border: 2px solid #000000;
+}
+
+.high-contrast .accessibility-btn {
+    background: #000000;
+    border: 2px solid #000000;
+    color: #ffffff;
+}
+
+.high-contrast .accessibility-btn:hover {
+    background: #333333;
+}
+
+.high-contrast .tip-ayuda {
+    background-color: #ffff00;
+    border-left-color: #000000;
+}
+
+.high-contrast .tip-ayuda h4,
+.high-contrast .tip-ayuda p {
+    color: #000000;
+}
+
+/* Texto más grande */
+.larger-text {
+    --font-size-large: 2.5rem;
+    --font-size-medium: 1.75rem;
+    --font-size-normal: 1.5rem;
+    --font-size-small: 1.25rem;
+}
+
+/* NUEVO: Estilos para el dropdown de accesibilidad en móviles */
+.accessibility-dropdown {
+    position: relative;
+    display: none;
+    width: 100%;
+}
+
+.accessibility-dropdown-btn {
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    color: white;
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-normal);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.accessibility-dropdown-btn:hover {
+    background-color: #004494;
+}
+
+.accessibility-dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--card-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.accessibility-dropdown-content.show {
+    display: block;
+}
+
+.accessibility-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: var(--font-size-normal);
+    font-weight: 600;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.accessibility-dropdown-item:hover {
+    background-color: #004494;
+}
+
+/* Responsive para móviles - MEJORADO */
+@media (max-width: 768px) {
+    :root {
+        --font-size-large: 1.75rem;
+        --font-size-medium: 1.5rem;
+        --font-size-normal: 1.25rem;
+        --font-size-small: 1rem;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .header {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    /* NUEVO: Controles de accesibilidad para móviles con dropdown */
+    .accessibility-controls {
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px;
+    }
+
+    .accessibility-btn {
+        display: none;
+        /* Ocultar botones individuales en móviles */
+    }
+
+    .accessibility-dropdown {
+        display: block;
+        /* Mostrar dropdown en móviles */
+    }
+
+    .misiones-section {
+        padding: 25px 15px;
+    }
+
+    .mision-item {
+        padding: 20px;
+    }
+
+    .mision-detalles {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 18px;
+    }
+
+    .btn-container {
+        flex-direction: column;
+    }
+
+    .mision-detalles-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab {
+        padding: 15px 20px;
+    }
+
+    .tts-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 20px 10px;
+    }
+
+    .misiones-section {
+        padding: 20px 10px;
+    }
+
+    /* NUEVO: Ajustes adicionales para pantallas muy pequeñas */
+    .accessibility-dropdown-btn {
+        padding: 16px 15px;
+        font-size: var(--font-size-normal);
+    }
+
+    .accessibility-dropdown-item {
+        padding: 16px 15px;
+    }
+}
+
+/* Mejoras de accesibilidad */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Enfoque para navegación con teclado */
+button:focus,
+a:focus,
+select:focus {
+    outline: 3px solid #ffbf47;
+    outline-offset: 2px;
+}
+
+/* Mejora de contraste para texto */
+.high-contrast-text {
+    color: #000000;
+    background-color: #ffffff;
+}
